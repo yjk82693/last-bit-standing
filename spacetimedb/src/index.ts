@@ -1,5 +1,6 @@
 import { schema, t, table, SenderError, type InferSchema, type ReducerCtx } from "spacetimedb/server";
 import { CARDS, PROMPTS } from "../../src/lib/catalog";
+import { START_RATING } from "./rating";
 
 // ---------- Catalog + scores (from the hackathon build) ----------
 
@@ -45,13 +46,30 @@ const score = table(
 
 // ---------- Multiplayer lobby ----------
 
-// One row per connected identity.
+// Public profile + multiplayer stats. Everyone in the lobby can read this,
+// so it never holds the email.
 const player = table(
   { name: "player", public: true },
   {
     identity: t.identity().primaryKey(),
     name: t.string(),
     online: t.bool(),
+    registered: t.bool(),
+    rating: t.u32(),
+    matches: t.u32(),
+    wins: t.u32(),
+    correctAnswers: t.u32(),
+    totalAnswers: t.u32(),
+  },
+);
+
+// Private: only reducers can read it. Links an identity to its email.
+const account = table(
+  { name: "account" },
+  {
+    identity: t.identity().primaryKey(),
+    email: t.string(),
+    createdAt: t.timestamp(),
   },
 );
 
@@ -86,7 +104,7 @@ const seat = table(
   },
 );
 
-const spacetimedb = schema({ card, prompt, score, player, room, seat });
+const spacetimedb = schema({ card, prompt, score, player, account, room, seat });
 export default spacetimedb;
 
 const QUICK_SIZES = [2, 3, 4];
@@ -95,7 +113,25 @@ const CUSTOM_MAX = 6;
 const START_HEALTH = 3;
 const CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no 0/O/1/I
 
+// Tokens from this issuer count as a registered (email) account.
+// Anonymous connections still get a SpacetimeDB-issued token, so we
+// check the issuer rather than just "has a JWT".
+const AUTH_ISSUER = "https://auth.spacetimedb.com/oidc";
+
 type Ctx = ReducerCtx<InferSchema<typeof spacetimedb>>;
+
+function signedInEmail(ctx: Ctx): string | null {
+  const jwt = ctx.senderAuth.jwt;
+  if (!jwt || jwt.issuer !== AUTH_ISSUER) return null;
+  const email = jwt.fullPayload["email"];
+  return typeof email === "string" && email.length > 0 ? email : null;
+}
+
+function requireAccount(ctx: Ctx) {
+  if (!ctx.db.account.identity.find(ctx.sender)) {
+    throw new SenderError("Sign in with your email to play multiplayer");
+  }
+}
 
 function seatsIn(ctx: Ctx, roomId: bigint) {
   return [...ctx.db.seat.roomId.filter(roomId)];
@@ -211,11 +247,31 @@ spacetimedb.init((ctx) => {
 });
 
 export const on_connect = spacetimedb.clientConnected((ctx) => {
+  const email = signedInEmail(ctx);
+  if (email) {
+    const acct = ctx.db.account.identity.find(ctx.sender);
+    if (acct) {
+      if (acct.email !== email) ctx.db.account.identity.update({ ...acct, email });
+    } else {
+      ctx.db.account.insert({ identity: ctx.sender, email, createdAt: ctx.timestamp });
+    }
+  }
   const existing = ctx.db.player.identity.find(ctx.sender);
   if (existing) {
-    ctx.db.player.identity.update({ ...existing, online: true });
+    ctx.db.player.identity.update({ ...existing, online: true, registered: Boolean(email) || existing.registered });
   } else {
-    ctx.db.player.insert({ identity: ctx.sender, name: "Player", online: true });
+    ctx.db.player.insert({
+      identity: ctx.sender,
+      // Default display name is the part of the email before "@".
+      name: email ? email.split("@")[0]!.slice(0, 24) : "Guest",
+      online: true,
+      registered: Boolean(email),
+      rating: START_RATING,
+      matches: 0,
+      wins: 0,
+      correctAnswers: 0,
+      totalAnswers: 0,
+    });
   }
 });
 
@@ -238,6 +294,7 @@ export const set_name = spacetimedb.reducer({ name: t.string() }, (ctx, { name }
 
 // Joins an open public quick room of that size, or opens a new one.
 export const quick_match = spacetimedb.reducer({ size: t.u8() }, (ctx, { size }) => {
+  requireAccount(ctx);
   if (!QUICK_SIZES.includes(size)) throw new SenderError("Quick rooms are 2, 3, or 4 players");
   const open = [...ctx.db.room.iter()]
     .filter(
@@ -260,6 +317,7 @@ export const quick_match = spacetimedb.reducer({ size: t.u8() }, (ctx, { size })
 export const create_custom_room = spacetimedb.reducer(
   { name: t.string(), capacity: t.u8(), isPrivate: t.bool() },
   (ctx, { name, capacity, isPrivate }) => {
+    requireAccount(ctx);
     if (capacity < CUSTOM_MIN || capacity > CUSTOM_MAX) {
       throw new SenderError(`Custom rooms seat ${CUSTOM_MIN} to ${CUSTOM_MAX}`);
     }
@@ -276,6 +334,7 @@ export const create_custom_room = spacetimedb.reducer(
 
 // From the lobby list (public rooms only).
 export const join_room = spacetimedb.reducer({ roomId: t.u64() }, (ctx, { roomId }) => {
+  requireAccount(ctx);
   const r = ctx.db.room.id.find(roomId);
   if (!r || r.visibility !== "public") throw new SenderError("Room not found");
   joinExisting(ctx, r);
@@ -283,6 +342,7 @@ export const join_room = spacetimedb.reducer({ roomId: t.u64() }, (ctx, { roomId
 
 // Works for both public and private rooms.
 export const join_by_code = spacetimedb.reducer({ code: t.string() }, (ctx, { code }) => {
+  requireAccount(ctx);
   const r = ctx.db.room.code.find(code.trim().toUpperCase());
   if (!r) throw new SenderError("No room with that code");
   joinExisting(ctx, r);
