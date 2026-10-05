@@ -4,6 +4,9 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "spacetimedb": "^1.11.0"
+    "spacetimedb": "^2.10.2"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2"
   }
 }
