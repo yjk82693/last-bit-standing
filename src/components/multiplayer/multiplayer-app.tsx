@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useAuth } from "react-oidc-context";
 import { useReducer, useSpacetimeDB, useTable } from "spacetimedb/react";
 import type { Identity } from "spacetimedb";
@@ -14,6 +13,7 @@ import type { Player, Room, Seat } from "@/module_bindings/types";
 import { SPACETIME_URI } from "@/lib/spacetime-client";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { SpacetimeShell } from "@/components/auth/spacetime-shell";
+import { MainMenuButton } from "@/components/main-menu-button";
 
 const QUICK_SIZES = [2, 3, 4] as const;
 
@@ -42,9 +42,7 @@ function SignedInGate() {
         </p>
         <div className="flex gap-2">
           <Button onClick={() => void auth.signinRedirect()}>Sign in with email</Button>
-          <Link href="/" className="self-center text-sm text-zinc-400 underline-offset-4 hover:underline">
-            Main menu
-          </Link>
+          <MainMenuButton />
         </div>
       </Panel>
     );
@@ -107,9 +105,7 @@ function Shell() {
             Last Bit Standing
           </h1>
         </div>
-        <Link href="/" className="text-sm text-zinc-400 underline-offset-4 hover:underline">
-          Main menu
-        </Link>
+        <MainMenuButton />
       </header>
 
       {myRoom && mySeat ? (

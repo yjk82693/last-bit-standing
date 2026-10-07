@@ -1,9 +1,9 @@
 "use client";
 
 import { useMemo } from "react";
-import Link from "next/link";
 import { Binary, BookOpen, ShieldAlert, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { MainMenuButton } from "@/components/main-menu-button";
 import {
   Dialog,
   DialogContent,
@@ -79,9 +79,7 @@ export function TitleScreen({
           <Button size="lg" variant="outline" asChild>
             <a href="#encoding-bench">Encoding bench</a>
           </Button>
-          <Button size="lg" variant="ghost" asChild>
-            <Link href="/">Main menu</Link>
-          </Button>
+          <MainMenuButton size="lg" />
         </div>
       </section>
 

@@ -6,6 +6,7 @@ import { EncodingCard } from "@/components/encoding-card";
 import { EncodingHelp } from "@/components/encoding-help";
 import { HealthPips, PlayerSeat } from "@/components/player-seat";
 import { Button } from "@/components/ui/button";
+import { MainMenuButton } from "@/components/main-menu-button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { displayedHint, matchQuality, youPlayer } from "@/lib/engine";
 import { explainFromCard } from "@/lib/questions";
@@ -139,6 +140,11 @@ export function GameTable({
           <Button variant="ghost" size="sm" onClick={onQuit}>
             Leave table
           </Button>
+          <MainMenuButton
+            confirmMessage={
+              state.phase === "gameover" ? undefined : "Leave this match for the main menu? This run will be lost."
+            }
+          />
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -330,9 +336,12 @@ export function GameTable({
                   : "You lost your last life. The models still hold the table."}
               </p>
               <p className="mt-1 font-mono text-amber-200">Score {state.score}</p>
-              <Button className="mt-3" onClick={onQuit}>
-                {state.winnerId === "you" ? "Take the win" : "Try another table"}
-              </Button>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Button onClick={onQuit}>
+                  {state.winnerId === "you" ? "Take the win" : "Try another table"}
+                </Button>
+                <MainMenuButton />
+              </div>
             </div>
           ) : null}
         </aside>

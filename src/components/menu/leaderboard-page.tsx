@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useAuth } from "react-oidc-context";
 import { AuthShell } from "@/components/auth/auth-shell";
+import { MainMenuButton } from "@/components/main-menu-button";
 import { SpacetimeShell } from "@/components/auth/spacetime-shell";
 import { LeaderboardTable, ProfileCard } from "@/components/menu/stats";
 
@@ -30,9 +30,7 @@ function Leaderboard() {
             Leaderboard
           </h1>
         </div>
-        <Link href="/" className="text-sm text-zinc-400 underline-offset-4 hover:underline">
-          Main menu
-        </Link>
+        <MainMenuButton />
       </header>
       <SpacetimeShell idToken={idToken}>
         {idToken && (
