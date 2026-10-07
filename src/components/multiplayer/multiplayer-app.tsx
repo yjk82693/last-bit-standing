@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { SpacetimeDBProvider, useReducer, useSpacetimeDB, useTable } from "spacetimedb/react";
+import { useAuth } from "react-oidc-context";
+import { useReducer, useSpacetimeDB, useTable } from "spacetimedb/react";
 import type { Identity } from "spacetimedb";
 import { Crown, LogOut, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,18 +11,48 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { reducers, tables } from "@/module_bindings";
 import type { Player, Room, Seat } from "@/module_bindings/types";
-import { makeConnectionBuilder, SPACETIME_URI } from "@/lib/spacetime-client";
+import { SPACETIME_URI } from "@/lib/spacetime-client";
+import { AuthShell } from "@/components/auth/auth-shell";
+import { SpacetimeShell } from "@/components/auth/spacetime-shell";
 
 const QUICK_SIZES = [2, 3, 4] as const;
 
 export function MultiplayerApp() {
-  const builder = useMemo(() => makeConnectionBuilder(), []);
   return (
-    <SpacetimeDBProvider connectionBuilder={builder}>
+    <AuthShell>
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-8 px-4 py-10">
-        <Shell />
+        <SignedInGate />
       </div>
-    </SpacetimeDBProvider>
+    </AuthShell>
+  );
+}
+
+// Multiplayer needs an email account, so the connection uses the sign-in token.
+function SignedInGate() {
+  const auth = useAuth();
+  if (auth.isLoading) {
+    return <Panel><p className="text-zinc-400">Checking sign-in...</p></Panel>;
+  }
+  if (!auth.isAuthenticated || !auth.user?.id_token) {
+    return (
+      <Panel>
+        <h2 className="text-lg font-medium text-zinc-100">Sign in to play multiplayer</h2>
+        <p className="text-sm text-zinc-400">
+          Your email account keeps your rating and stats on every device.
+        </p>
+        <div className="flex gap-2">
+          <Button onClick={() => void auth.signinRedirect()}>Sign in with email</Button>
+          <Link href="/" className="self-center text-sm text-zinc-400 underline-offset-4 hover:underline">
+            Main menu
+          </Link>
+        </div>
+      </Panel>
+    );
+  }
+  return (
+    <SpacetimeShell idToken={auth.user.id_token}>
+      <Shell />
+    </SpacetimeShell>
   );
 }
 
@@ -78,7 +109,7 @@ function Shell() {
           </h1>
         </div>
         <Link href="/" className="text-sm text-zinc-400 underline-offset-4 hover:underline">
-          Back to solo
+          Main menu
         </Link>
       </header>
 
