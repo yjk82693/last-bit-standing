@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "react-oidc-context";
 import { Swords, Trophy, User, LogIn, LogOut } from "lucide-react";
@@ -7,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { SpacetimeShell } from "@/components/auth/spacetime-shell";
 import { ProfileCard } from "@/components/menu/stats";
+import { BinaryBackdrop } from "@/components/auth/binary-backdrop";
 
 export function MainMenuPage() {
   return (
@@ -38,33 +40,67 @@ function MainMenu() {
   return signedIn ? <Menu /> : <SignInScreen />;
 }
 
-// Step 0: everyone starts here. Magic-link sign-in also creates the
-// account the first time, so one button covers sign in and register.
+// Step 0: everyone starts here. Both tabs open SpacetimeAuth, where the
+// player picks Google or email. A new email or Google account is
+// registered automatically on its first sign-in.
 function SignInScreen() {
   const auth = useAuth();
+  const [tab, setTab] = useState<"signin" | "register">("signin");
+  const copy =
+    tab === "signin"
+      ? { title: "Welcome back", body: "Pick up where you left off. Your rating and stats follow your account." }
+      : { title: "Create your account", body: "One click with Google, or get a magic link by email. No password to remember." };
+
   return (
-    <div className="mx-auto flex min-h-[80vh] w-full max-w-md flex-col justify-center gap-8 px-4 py-10">
-      <div className="space-y-2 text-center">
-        <p className="font-mono text-xs tracking-[0.28em] text-amber-200/80">
-          BINARY · HEX · ASCII
-        </p>
-        <h1 className="text-4xl font-semibold tracking-tight text-zinc-50 sm:text-5xl">
-          Last Bit Standing
-        </h1>
+    <div className="relative min-h-screen">
+      <BinaryBackdrop />
+      <div className="relative mx-auto flex min-h-screen w-full max-w-md flex-col justify-center gap-8 px-4 py-10">
+        <div className="space-y-2 text-center sm:-mx-24">
+          <p className="font-mono text-xs tracking-[0.28em] text-amber-200/80">
+            BINARY · HEX · ASCII
+          </p>
+          <h1 className="text-4xl font-semibold tracking-tight text-zinc-50 sm:text-5xl">
+            Last Bit Standing
+          </h1>
+        </div>
+
+        <section className="rounded-2xl border border-zinc-800 bg-zinc-900/80 p-2 shadow-2xl shadow-black/50 backdrop-blur">
+          <div role="tablist" className="grid grid-cols-2 gap-1 rounded-xl bg-zinc-950/70 p-1">
+            {(["signin", "register"] as const).map((t) => (
+              <button
+                key={t}
+                role="tab"
+                type="button"
+                aria-selected={tab === t}
+                onClick={() => setTab(t)}
+                className={
+                  "rounded-lg py-2 text-sm font-medium transition " +
+                  (tab === t ? "bg-amber-300 text-zinc-950" : "text-zinc-400 hover:text-zinc-100")
+                }
+              >
+                {t === "signin" ? "Sign in" : "Register"}
+              </button>
+            ))}
+          </div>
+
+          <div className="space-y-4 p-4">
+            <div className="space-y-1">
+              <h2 className="text-lg font-medium text-zinc-100">{copy.title}</h2>
+              <p className="text-sm text-zinc-400">{copy.body}</p>
+            </div>
+            <Button className="w-full" size="lg" onClick={() => void auth.signinRedirect()}>
+              <LogIn className="size-4" />
+              {tab === "signin" ? "Sign in with one click" : "Register with one click"}
+            </Button>
+            <p className="text-center text-xs text-zinc-500">
+              Continue with Google or email on the next screen.
+            </p>
+            {auth.error && (
+              <p className="text-sm text-red-300">Sign-in problem: {auth.error.message}</p>
+            )}
+          </div>
+        </section>
       </div>
-      <Panel>
-        <h2 className="text-lg font-medium text-zinc-100">Sign in or register</h2>
-        <p className="text-sm text-zinc-400">
-          Enter your email and we will send you a magic link. New players get an
-          account automatically on first sign-in.
-        </p>
-        <Button className="w-full" onClick={() => void auth.signinRedirect()}>
-          <LogIn className="size-4" /> Continue with email
-        </Button>
-        {auth.error && (
-          <p className="text-sm text-red-300">Sign-in problem: {auth.error.message}</p>
-        )}
-      </Panel>
     </div>
   );
 }

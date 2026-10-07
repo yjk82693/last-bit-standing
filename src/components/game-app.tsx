@@ -29,7 +29,7 @@ import {
 import { useTableVoice } from "@/components/use-table-voice";
 import type { GameState, ScoreRow } from "@/lib/types";
 
-export function GameApp() {
+export function GameApp({ playerName = "Operator" }: { playerName?: string }) {
   const snapshot = localCatalog();
   const [state, setState] = useState<GameState | null>(null);
   const [now, setNow] = useState(() => Date.now());
@@ -227,20 +227,21 @@ export function GameApp() {
   if (!state) {
     return (
       <TitleScreen
+        playerName={playerName}
         storeLabel={storeLabel}
         scores={scores}
         onResetScores={() => {
           setScores(clearLocalScores());
           void fetch("/api/scores", { method: "DELETE" });
         }}
-        onStart={(name) => {
+        onStart={() => {
           saved.current = false;
           helpOpenRef.current = false;
           hintOpenRef.current = false;
           clockFreezeRef.current = null;
           setClockFreeze(null);
           setHelpOpen(false);
-          setState(createMatch(name, storeLabel));
+          setState(createMatch(playerName, storeLabel));
         }}
       />
     );

@@ -1,7 +1,11 @@
 "use client";
 
-import { useSpacetimeDB, useTable } from "spacetimedb/react";
-import { tables } from "@/module_bindings";
+import { useState } from "react";
+import { Pencil } from "lucide-react";
+import { useReducer, useSpacetimeDB, useTable } from "spacetimedb/react";
+import { reducers, tables } from "@/module_bindings";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import type { Player } from "@/module_bindings/types";
 
 export function accuracyOf(p: Player): string {
@@ -35,10 +39,7 @@ export function ProfileCard() {
   ];
   return (
     <div className="space-y-3">
-      <p className="text-zinc-100">
-        <span className="text-zinc-400">Playing as </span>
-        <span className="font-medium">{me.name}</span>
-      </p>
+      <NameEditor name={me.name} />
       <dl className="grid grid-cols-3 gap-3 sm:grid-cols-5">
         {stats.map((s) => (
           <div key={s.label} className="rounded-lg border border-zinc-800 bg-zinc-950/60 p-3">
@@ -91,6 +92,59 @@ export function LeaderboardTable({ limit = 50 }: { limit?: number }) {
           })}
         </tbody>
       </table>
+    </div>
+  );
+}
+
+// Display name is edited here only; every mode reads it from the profile.
+function NameEditor({ name }: { name: string }) {
+  const setName = useReducer(reducers.setName);
+  const [draft, setDraft] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  if (draft === null) {
+    return (
+      <div className="flex items-center gap-2 text-zinc-100">
+        <span className="text-zinc-400">Playing as</span>
+        <span className="font-medium">{name}</span>
+        <Button size="sm" variant="ghost" onClick={() => setDraft(name)} aria-label="Change name">
+          <Pencil className="size-3.5" /> Change
+        </Button>
+      </div>
+    );
+  }
+
+  const save = () => {
+    const clean = draft.trim();
+    if (!clean || clean === name) {
+      setDraft(null);
+      return;
+    }
+    setError(null);
+    setName({ name: clean })
+      .then(() => setDraft(null))
+      .catch((e: unknown) => setError(e instanceof Error ? e.message : String(e)));
+  };
+
+  return (
+    <div className="space-y-2">
+      <div className="flex gap-2">
+        <Input
+          autoFocus
+          value={draft}
+          maxLength={24}
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") save();
+            if (e.key === "Escape") setDraft(null);
+          }}
+        />
+        <Button onClick={save}>Save</Button>
+        <Button variant="ghost" onClick={() => setDraft(null)}>
+          Cancel
+        </Button>
+      </div>
+      {error && <p className="text-sm text-red-300">{error}</p>}
     </div>
   );
 }

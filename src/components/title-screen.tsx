@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
+import Link from "next/link";
 import { Binary, BookOpen, ShieldAlert, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
@@ -19,17 +19,18 @@ import { BOTS } from "@/lib/bots";
 import type { ScoreRow } from "@/lib/types";
 
 export function TitleScreen({
+  playerName,
   storeLabel,
   scores,
   onStart,
   onResetScores,
 }: {
+  playerName: string;
   storeLabel: string;
   scores: ScoreRow[];
-  onStart: (name: string) => void;
+  onStart: () => void;
   onResetScores: () => void;
 }) {
-  const [name, setName] = useState("Operator");
   const samples = useMemo(() => {
     const wanted = ["binary-50", "hex-8", "ascii-65", "binary-255"];
     return wanted
@@ -65,23 +66,21 @@ export function TitleScreen({
       </div>
 
       <section className="grid gap-4 rounded-2xl border border-white/10 bg-black/25 p-4 sm:grid-cols-[1fr_auto] sm:items-end">
-        <label className="grid gap-2">
-          <span className="text-sm text-zinc-400">Operator name</span>
-          <Input
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            maxLength={24}
-            placeholder="Operator"
-            className="h-10 bg-black/30"
-          />
-        </label>
+        <div className="grid gap-1">
+          <span className="text-sm text-zinc-400">Playing as</span>
+          <span className="text-lg font-medium text-zinc-100">{playerName}</span>
+          <span className="text-xs text-zinc-500">Change your name from your profile on the main menu.</span>
+        </div>
         <div className="flex flex-wrap gap-2">
-          <Button size="lg" onClick={() => onStart(name)}>
+          <Button size="lg" onClick={onStart}>
             Sit at the table
           </Button>
           <HowToPlay />
           <Button size="lg" variant="outline" asChild>
             <a href="#encoding-bench">Encoding bench</a>
+          </Button>
+          <Button size="lg" variant="ghost" asChild>
+            <Link href="/">Main menu</Link>
           </Button>
         </div>
       </section>

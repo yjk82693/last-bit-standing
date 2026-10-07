@@ -91,7 +91,6 @@ function Shell() {
   }
 
   const me = conn.identity;
-  const myPlayer = players.find((p) => sameId(p.identity, me));
   const mySeat = seats.find((s) => {
     if (!sameId(s.identity, me)) return false;
     const r = rooms.find((x) => x.id === s.roomId);
@@ -113,8 +112,6 @@ function Shell() {
         </Link>
       </header>
 
-      <NameBar player={myPlayer} />
-
       {myRoom && mySeat ? (
         <WaitingRoom room={myRoom} seats={seats} players={players} me={me} />
       ) : (
@@ -129,37 +126,6 @@ function Panel({ children }: { children: React.ReactNode }) {
     <section className="space-y-3 rounded-xl border border-zinc-800 bg-zinc-900/60 p-5">
       {children}
     </section>
-  );
-}
-
-function NameBar({ player }: { player?: Player }) {
-  const setName = useReducer(reducers.setName);
-  const [draft, setDraft] = useState<string | null>(null);
-  const { error, run } = useAction();
-  const value = draft ?? player?.name ?? "";
-
-  return (
-    <Panel>
-      <label className="text-sm text-zinc-400" htmlFor="mp-name">Your name</label>
-      <div className="flex gap-2">
-        <Input
-          id="mp-name"
-          value={value}
-          maxLength={24}
-          onChange={(e) => setDraft(e.target.value)}
-        />
-        <Button
-          disabled={!draft || draft === player?.name}
-          onClick={() => {
-            run(setName({ name: value }));
-            setDraft(null);
-          }}
-        >
-          Save
-        </Button>
-      </div>
-      {error && <p className="text-sm text-red-300">{error}</p>}
-    </Panel>
   );
 }
 
