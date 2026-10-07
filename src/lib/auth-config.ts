@@ -11,7 +11,8 @@ export function makeAuthConfig(onSignedIn: () => void): AuthProviderProps {
     client_id: AUTH_CLIENT_ID,
     redirect_uri: `${origin}/callback`,
     post_logout_redirect_uri: `${origin}/`,
-    scope: "openid profile email",
+    // offline_access gives a refresh token so the session renews instead of expiring.
+    scope: "openid profile email offline_access",
     response_type: "code",
     // localStorage so you stay signed in across tabs and restarts.
     userStore: new WebStorageStateStore({ store: window.localStorage }),
