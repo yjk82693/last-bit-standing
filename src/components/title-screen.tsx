@@ -13,7 +13,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { EncodingCard } from "@/components/encoding-card";
-import { EncodingPrimer } from "@/components/encoding-primer";
 import { CARDS } from "@/lib/catalog";
 import { BOTS } from "@/lib/bots";
 import type { ScoreRow } from "@/lib/types";
@@ -76,9 +75,6 @@ export function TitleScreen({
             Sit at the table
           </Button>
           <HowToPlay />
-          <Button size="lg" variant="outline" asChild>
-            <a href="#encoding-bench">Encoding bench</a>
-          </Button>
           <MainMenuButton size="lg" />
         </div>
       </section>
@@ -187,8 +183,6 @@ export function TitleScreen({
           Card store: {storeLabel}
         </p>
       </section>
-
-      <EncodingPrimer />
     </div>
   );
 }

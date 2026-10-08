@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "react-oidc-context";
-import { Swords, Trophy, User, LogIn, LogOut } from "lucide-react";
+import { Binary, Swords, Trophy, User, LogIn, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { SpacetimeShell } from "@/components/auth/spacetime-shell";
@@ -128,7 +128,7 @@ function Menu() {
         </div>
       </header>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <MenuCard
           href="/solo"
           icon={<User className="size-5" />}
@@ -146,6 +146,12 @@ function Menu() {
           icon={<Trophy className="size-5" />}
           title="Leaderboard"
           blurb="Ranked rating, wins, and accuracy."
+        />
+        <MenuCard
+          href="/bench"
+          icon={<Binary className="size-5" />}
+          title="Encoding bench"
+          blurb="Binary, hex, and ASCII reference tables."
         />
       </div>
 
