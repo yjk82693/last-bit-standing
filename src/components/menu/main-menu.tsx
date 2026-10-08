@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "react-oidc-context";
-import { Binary, Swords, Trophy, User, LogIn, LogOut } from "lucide-react";
+import { Binary, Swords, Trophy, User, UserRound, LogIn, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { SpacetimeShell } from "@/components/auth/spacetime-shell";
@@ -26,9 +26,34 @@ function Panel({ children }: { children: React.ReactNode }) {
   );
 }
 
+// Guest mode is remembered in this browser only. It unlocks solo, the
+// leaderboard and the encoding bench; multiplayer still needs an account.
+const GUEST_KEY = "lbs-guest";
+
+function readGuest(): boolean {
+  try {
+    return window.localStorage.getItem(GUEST_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function useGuestMode(): [boolean, (on: boolean) => void] {
+  const [guest, setGuestState] = useState(readGuest);
+  const setGuest = (on: boolean) => {
+    try {
+      if (on) window.localStorage.setItem(GUEST_KEY, "1");
+      else window.localStorage.removeItem(GUEST_KEY);
+    } catch {}
+    setGuestState(on);
+  };
+  return [guest, setGuest];
+}
+
 function MainMenu() {
   const auth = useAuth();
   const signedIn = auth.isAuthenticated && Boolean(auth.user?.id_token);
+  const [guest, setGuest] = useGuestMode();
 
   if (auth.isLoading) {
     return (
@@ -37,13 +62,15 @@ function MainMenu() {
       </div>
     );
   }
-  return signedIn ? <Menu /> : <SignInScreen />;
+  if (signedIn) return <Menu />;
+  if (guest) return <Menu guest onExitGuest={() => setGuest(false)} />;
+  return <SignInScreen onGuest={() => setGuest(true)} />;
 }
 
 // Step 0: everyone starts here. Both tabs open SpacetimeAuth, where the
 // player picks Google or email. A new email or Google account is
 // registered automatically on its first sign-in.
-function SignInScreen() {
+function SignInScreen({ onGuest }: { onGuest: () => void }) {
   const auth = useAuth();
   const [tab, setTab] = useState<"signin" | "register">("signin");
   const copy =
@@ -95,6 +122,17 @@ function SignInScreen() {
             <p className="text-center text-xs text-zinc-500">
               Continue with Google or email on the next screen.
             </p>
+            <div className="flex items-center gap-3 text-xs text-zinc-600">
+              <span className="h-px flex-1 bg-zinc-800" />
+              or
+              <span className="h-px flex-1 bg-zinc-800" />
+            </div>
+            <Button className="w-full" variant="outline" onClick={onGuest}>
+              <UserRound className="size-4" /> Play as guest
+            </Button>
+            <p className="text-center text-xs text-zinc-500">
+              Guests can play solo and use the encoding bench. Multiplayer and rankings need an account.
+            </p>
             {auth.error && (
               <p className="text-sm text-red-300">Sign-in problem: {auth.error.message}</p>
             )}
@@ -105,8 +143,12 @@ function SignInScreen() {
   );
 }
 
-function Menu() {
+function Menu({ guest = false, onExitGuest }: { guest?: boolean; onExitGuest?: () => void }) {
   const auth = useAuth();
+  const signIn = () => {
+    onExitGuest?.();
+    void auth.signinRedirect();
+  };
   const email = auth.user?.profile.email;
 
   return (
@@ -120,12 +162,24 @@ function Menu() {
             Last Bit Standing
           </h1>
         </div>
-        <div className="flex items-center gap-3 text-sm">
-          <span className="text-zinc-400">{email}</span>
-          <Button size="sm" variant="ghost" onClick={() => void auth.signoutRedirect()}>
-            <LogOut className="size-4" /> Sign out
-          </Button>
-        </div>
+        {guest ? (
+          <div className="flex items-center gap-3 text-sm">
+            <span className="text-zinc-400">Playing as guest</span>
+            <Button size="sm" onClick={signIn}>
+              <LogIn className="size-4" /> Sign in
+            </Button>
+            <Button size="sm" variant="ghost" onClick={onExitGuest}>
+              <LogOut className="size-4" /> Exit
+            </Button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-3 text-sm">
+            <span className="text-zinc-400">{email}</span>
+            <Button size="sm" variant="ghost" onClick={() => void auth.signoutRedirect()}>
+              <LogOut className="size-4" /> Sign out
+            </Button>
+          </div>
+        )}
       </header>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -139,7 +193,7 @@ function Menu() {
           href="/multiplayer"
           icon={<Swords className="size-5" />}
           title="Multiplayer"
-          blurb="Quick match, custom rooms, room codes."
+          blurb={guest ? "Sign in to play against other people." : "Quick match, custom rooms, room codes."}
         />
         <MenuCard
           href="/leaderboard"
@@ -155,12 +209,24 @@ function Menu() {
         />
       </div>
 
-      <Panel>
-        <h2 className="text-lg font-medium text-zinc-100">Your profile</h2>
-        <SpacetimeShell idToken={auth.user!.id_token}>
-          <ProfileCard />
-        </SpacetimeShell>
-      </Panel>
+      {guest ? (
+        <Panel>
+          <h2 className="text-lg font-medium text-zinc-100">Playing as guest</h2>
+          <p className="text-sm text-zinc-400">
+            Create a free account to join multiplayer, earn a rating, and show up on the leaderboard.
+          </p>
+          <Button onClick={signIn}>
+            <LogIn className="size-4" /> Register or sign in
+          </Button>
+        </Panel>
+      ) : (
+        <Panel>
+          <h2 className="text-lg font-medium text-zinc-100">Your profile</h2>
+          <SpacetimeShell idToken={auth.user!.id_token}>
+            <ProfileCard />
+          </SpacetimeShell>
+        </Panel>
+      )}
     </div>
   );
 }

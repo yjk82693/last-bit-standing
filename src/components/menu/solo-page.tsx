@@ -23,8 +23,8 @@ function Solo() {
   const auth = useAuth();
   if (auth.isLoading) return <Loading />;
   const idToken = auth.isAuthenticated ? auth.user?.id_token : undefined;
-  // Signed-out visitors can still play solo under the default name.
-  if (!idToken) return <GameApp />;
+  // Guests and signed-out visitors play solo without a profile.
+  if (!idToken) return <GameApp playerName="Guest" />;
   return (
     <SpacetimeShell idToken={idToken}>
       <SoloWithProfile />
