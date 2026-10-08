@@ -14,6 +14,7 @@ import { SPACETIME_URI } from "@/lib/spacetime-client";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { SpacetimeShell } from "@/components/auth/spacetime-shell";
 import { MainMenuButton } from "@/components/main-menu-button";
+import { useGuestMode } from "@/lib/guest";
 
 const QUICK_SIZES = [2, 3, 4] as const;
 
@@ -27,28 +28,33 @@ export function MultiplayerApp() {
   );
 }
 
-// Multiplayer needs an email account, so the connection uses the sign-in token.
+// Accounts connect with their sign-in token; guests with this browser's guest identity.
 function SignedInGate() {
   const auth = useAuth();
+  const [guest, setGuest] = useGuestMode();
   if (auth.isLoading) {
     return <Panel><p className="text-zinc-400">Checking sign-in...</p></Panel>;
   }
-  if (!auth.isAuthenticated || !auth.user?.id_token) {
+  const idToken = auth.isAuthenticated ? auth.user?.id_token : undefined;
+  if (!idToken && !guest) {
     return (
       <Panel>
-        <h2 className="text-lg font-medium text-zinc-100">Sign in to play multiplayer</h2>
+        <h2 className="text-lg font-medium text-zinc-100">Sign in or play as guest</h2>
         <p className="text-sm text-zinc-400">
-          Your email account keeps your rating and stats on every device.
+          An account keeps your rating on every device. A guest gets a random ID in this browser.
         </p>
-        <div className="flex gap-2">
-          <Button onClick={() => void auth.signinRedirect()}>Sign in with email</Button>
+        <div className="flex flex-wrap gap-2">
+          <Button onClick={() => void auth.signinRedirect()}>Sign in</Button>
+          <Button variant="outline" onClick={() => setGuest(true)}>
+            Play as guest
+          </Button>
           <MainMenuButton />
         </div>
       </Panel>
     );
   }
   return (
-    <SpacetimeShell idToken={auth.user.id_token}>
+    <SpacetimeShell idToken={idToken}>
       <Shell />
     </SpacetimeShell>
   );

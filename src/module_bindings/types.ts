@@ -28,6 +28,13 @@ export const Card = __t.object("Card", {
 });
 export type Card = __Infer<typeof Card>;
 
+export const GuestLink = __t.object("GuestLink", {
+  code: __t.string(),
+  guest: __t.identity(),
+  createdAt: __t.timestamp(),
+});
+export type GuestLink = __Infer<typeof GuestLink>;
+
 export const Player = __t.object("Player", {
   identity: __t.identity(),
   name: __t.string(),

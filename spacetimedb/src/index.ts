@@ -1,4 +1,5 @@
 import { schema, t, table, SenderError, type InferSchema, type ReducerCtx } from "spacetimedb/server";
+import type { Identity } from "spacetimedb";
 import { CARDS, PROMPTS } from "../../src/lib/catalog";
 import { START_RATING } from "./rating";
 
@@ -104,7 +105,18 @@ const seat = table(
   },
 );
 
-const spacetimedb = schema({ card, prompt, score, player, account, room, seat });
+// Private: a guest asks to link, the code is kept in their browser, and
+// after they sign in the account presents it to claim the guest record.
+const guest_link = table(
+  { name: "guest_link" },
+  {
+    code: t.string().primaryKey(),
+    guest: t.identity(),
+    createdAt: t.timestamp(),
+  },
+);
+
+const spacetimedb = schema({ card, prompt, score, player, account, guest_link, room, seat });
 export default spacetimedb;
 
 const QUICK_SIZES = [2, 3, 4];
@@ -112,6 +124,8 @@ const CUSTOM_MIN = 2;
 const CUSTOM_MAX = 6;
 const START_HEALTH = 3;
 const CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no 0/O/1/I
+const GUEST_ID_CHARS = "0123456789ABCDEFGHJKLMNPQRSTUVWXYZ";
+const LINK_TTL_MICROS = 60n * 60n * 1_000_000n; // a link code lasts one hour
 
 // Tokens from this issuer count as a registered (email) account.
 // Anonymous connections still get a SpacetimeDB-issued token, so we
@@ -129,7 +143,25 @@ function signedInEmail(ctx: Ctx): string | null {
 
 function requireAccount(ctx: Ctx) {
   if (!ctx.db.account.identity.find(ctx.sender)) {
-    throw new SenderError("Sign in with your email to play multiplayer");
+    throw new SenderError("Sign in to an account first");
+  }
+}
+
+function newGuestId(ctx: Ctx): string {
+  const taken = new Set([...ctx.db.player.iter()].map((p) => p.name));
+  for (let attempt = 0; attempt < 50; attempt++) {
+    let id = "id";
+    for (let i = 0; i < 5; i++) {
+      id += GUEST_ID_CHARS[ctx.random.integerInRange(0, GUEST_ID_CHARS.length - 1)];
+    }
+    if (!taken.has(id)) return id;
+  }
+  throw new SenderError("Could not generate a guest ID, try again");
+}
+
+function dropLinksFor(ctx: Ctx, guest: Identity) {
+  for (const l of [...ctx.db.guest_link.iter()]) {
+    if (l.guest.isEqual(guest)) ctx.db.guest_link.code.delete(l.code);
   }
 }
 
@@ -263,7 +295,7 @@ export const on_connect = spacetimedb.clientConnected((ctx) => {
     ctx.db.player.insert({
       identity: ctx.sender,
       // Default display name is the part of the email before "@".
-      name: email ? email.split("@")[0]!.slice(0, 24) : "Guest",
+      name: email ? email.split("@")[0]!.slice(0, 24) : newGuestId(ctx),
       online: true,
       registered: Boolean(email),
       rating: START_RATING,
@@ -294,7 +326,6 @@ export const set_name = spacetimedb.reducer({ name: t.string() }, (ctx, { name }
 
 // Joins an open public quick room of that size, or opens a new one.
 export const quick_match = spacetimedb.reducer({ size: t.u8() }, (ctx, { size }) => {
-  requireAccount(ctx);
   if (!QUICK_SIZES.includes(size)) throw new SenderError("Quick rooms are 2, 3, or 4 players");
   const open = [...ctx.db.room.iter()]
     .filter(
@@ -317,7 +348,6 @@ export const quick_match = spacetimedb.reducer({ size: t.u8() }, (ctx, { size })
 export const create_custom_room = spacetimedb.reducer(
   { name: t.string(), capacity: t.u8(), isPrivate: t.bool() },
   (ctx, { name, capacity, isPrivate }) => {
-    requireAccount(ctx);
     if (capacity < CUSTOM_MIN || capacity > CUSTOM_MAX) {
       throw new SenderError(`Custom rooms seat ${CUSTOM_MIN} to ${CUSTOM_MAX}`);
     }
@@ -334,7 +364,6 @@ export const create_custom_room = spacetimedb.reducer(
 
 // From the lobby list (public rooms only).
 export const join_room = spacetimedb.reducer({ roomId: t.u64() }, (ctx, { roomId }) => {
-  requireAccount(ctx);
   const r = ctx.db.room.id.find(roomId);
   if (!r || r.visibility !== "public") throw new SenderError("Room not found");
   joinExisting(ctx, r);
@@ -342,7 +371,6 @@ export const join_room = spacetimedb.reducer({ roomId: t.u64() }, (ctx, { roomId
 
 // Works for both public and private rooms.
 export const join_by_code = spacetimedb.reducer({ code: t.string() }, (ctx, { code }) => {
-  requireAccount(ctx);
   const r = ctx.db.room.code.find(code.trim().toUpperCase());
   if (!r) throw new SenderError("No room with that code");
   joinExisting(ctx, r);
@@ -399,6 +427,49 @@ export const start_match = spacetimedb.reducer((ctx) => {
   if (!seats.every((s) => s.ready)) throw new SenderError("Everyone must be ready");
   ctx.db.room.id.update({ ...here.room, phase: "playing" });
   // Round dealing comes in the next step.
+});
+
+// Guest, step 1: remember a secret code for this guest identity.
+export const link_guest_start = spacetimedb.reducer({ code: t.string() }, (ctx, { code }) => {
+  if (ctx.db.account.identity.find(ctx.sender)) throw new SenderError("Already an account");
+  if (!ctx.db.player.identity.find(ctx.sender)) throw new SenderError("Not connected");
+  if (code.length < 24 || code.length > 128) throw new SenderError("Bad link code");
+  dropLinksFor(ctx, ctx.sender);
+  ctx.db.guest_link.insert({ code, guest: ctx.sender, createdAt: ctx.timestamp });
+});
+
+// Account, step 2: move the guest's record onto this account.
+export const link_guest_claim = spacetimedb.reducer({ code: t.string() }, (ctx, { code }) => {
+  requireAccount(ctx);
+  const link = ctx.db.guest_link.code.find(code);
+  if (!link) throw new SenderError("That guest link was not found");
+  ctx.db.guest_link.code.delete(code);
+  const age = ctx.timestamp.microsSinceUnixEpoch - link.createdAt.microsSinceUnixEpoch;
+  if (age > LINK_TTL_MICROS) throw new SenderError("That guest link expired, link again from guest settings");
+  if (link.guest.isEqual(ctx.sender)) throw new SenderError("Nothing to link");
+  const guest = ctx.db.player.identity.find(link.guest);
+  const me = ctx.db.player.identity.find(ctx.sender);
+  if (!guest || !me) throw new SenderError("Guest record is gone");
+  ctx.db.player.identity.update({
+    ...me,
+    // A brand-new account takes the guest's rating; an existing one keeps its own.
+    rating: me.matches === 0 ? guest.rating : me.rating,
+    matches: me.matches + guest.matches,
+    wins: me.wins + guest.wins,
+    correctAnswers: me.correctAnswers + guest.correctAnswers,
+    totalAnswers: me.totalAnswers + guest.totalAnswers,
+  });
+  vacate(ctx, link.guest);
+  dropLinksFor(ctx, link.guest);
+  ctx.db.player.identity.delete(link.guest);
+});
+
+// Guest leaving for good: free their seat and delete the record.
+export const discard_guest = spacetimedb.reducer((ctx) => {
+  if (ctx.db.account.identity.find(ctx.sender)) throw new SenderError("Accounts are not discarded");
+  vacate(ctx);
+  dropLinksFor(ctx, ctx.sender);
+  ctx.db.player.identity.delete(ctx.sender);
 });
 
 export const record_score = spacetimedb.reducer(

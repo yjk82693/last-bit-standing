@@ -6,6 +6,7 @@ import { tables } from "@/module_bindings";
 import { GameApp } from "@/components/game-app";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { SpacetimeShell } from "@/components/auth/spacetime-shell";
+import { isGuest } from "@/lib/guest";
 
 export function SoloPage() {
   return (
@@ -23,8 +24,9 @@ function Solo() {
   const auth = useAuth();
   if (auth.isLoading) return <Loading />;
   const idToken = auth.isAuthenticated ? auth.user?.id_token : undefined;
-  // Guests and signed-out visitors play solo without a profile.
-  if (!idToken) return <GameApp playerName="Guest" />;
+  // Visitors who are neither signed in nor in guest mode play without a profile.
+  if (!idToken && !isGuest()) return <GameApp playerName="Guest" />;
+  // Accounts use their sign-in token; guests use this browser's guest identity.
   return (
     <SpacetimeShell idToken={idToken}>
       <SoloWithProfile />

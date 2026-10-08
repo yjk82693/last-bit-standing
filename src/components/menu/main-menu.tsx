@@ -7,8 +7,10 @@ import { Binary, Swords, Trophy, User, UserRound, LogIn, LogOut } from "lucide-r
 import { Button } from "@/components/ui/button";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { SpacetimeShell } from "@/components/auth/spacetime-shell";
-import { ProfileCard } from "@/components/menu/stats";
+import { ProfileCard, useMe } from "@/components/menu/stats";
+import { GuestLinkClaimer, GuestSettings } from "@/components/menu/guest-settings";
 import { BinaryBackdrop } from "@/components/auth/binary-backdrop";
+import { useGuestMode } from "@/lib/guest";
 
 export function MainMenuPage() {
   return (
@@ -26,30 +28,6 @@ function Panel({ children }: { children: React.ReactNode }) {
   );
 }
 
-// Guest mode is remembered in this browser only. It unlocks solo, the
-// leaderboard and the encoding bench; multiplayer still needs an account.
-const GUEST_KEY = "lbs-guest";
-
-function readGuest(): boolean {
-  try {
-    return window.localStorage.getItem(GUEST_KEY) === "1";
-  } catch {
-    return false;
-  }
-}
-
-function useGuestMode(): [boolean, (on: boolean) => void] {
-  const [guest, setGuestState] = useState(readGuest);
-  const setGuest = (on: boolean) => {
-    try {
-      if (on) window.localStorage.setItem(GUEST_KEY, "1");
-      else window.localStorage.removeItem(GUEST_KEY);
-    } catch {}
-    setGuestState(on);
-  };
-  return [guest, setGuest];
-}
-
 function MainMenu() {
   const auth = useAuth();
   const signedIn = auth.isAuthenticated && Boolean(auth.user?.id_token);
@@ -62,8 +40,21 @@ function MainMenu() {
       </div>
     );
   }
-  if (signedIn) return <Menu />;
-  if (guest) return <Menu guest onExitGuest={() => setGuest(false)} />;
+  if (signedIn) {
+    return (
+      <SpacetimeShell idToken={auth.user!.id_token}>
+        <Menu />
+      </SpacetimeShell>
+    );
+  }
+  if (guest) {
+    // No idToken: connects with this browser's guest identity.
+    return (
+      <SpacetimeShell>
+        <Menu guest onExitGuest={() => setGuest(false)} />
+      </SpacetimeShell>
+    );
+  }
   return <SignInScreen onGuest={() => setGuest(true)} />;
 }
 
@@ -131,7 +122,8 @@ function SignInScreen({ onGuest }: { onGuest: () => void }) {
               <UserRound className="size-4" /> Play as guest
             </Button>
             <p className="text-center text-xs text-zinc-500">
-              Guests can play solo and use the encoding bench. Multiplayer and rankings need an account.
+              Get a random guest ID and play everything, multiplayer included. Link it to an
+              account later from guest settings to keep your record.
             </p>
             {auth.error && (
               <p className="text-sm text-red-300">Sign-in problem: {auth.error.message}</p>
@@ -145,11 +137,8 @@ function SignInScreen({ onGuest }: { onGuest: () => void }) {
 
 function Menu({ guest = false, onExitGuest }: { guest?: boolean; onExitGuest?: () => void }) {
   const auth = useAuth();
-  const signIn = () => {
-    onExitGuest?.();
-    void auth.signinRedirect();
-  };
   const email = auth.user?.profile.email;
+  const me = useMe();
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-8 px-4 py-10 sm:py-14">
@@ -163,14 +152,9 @@ function Menu({ guest = false, onExitGuest }: { guest?: boolean; onExitGuest?: (
           </h1>
         </div>
         {guest ? (
-          <div className="flex items-center gap-3 text-sm">
-            <span className="text-zinc-400">Playing as guest</span>
-            <Button size="sm" onClick={signIn}>
-              <LogIn className="size-4" /> Sign in
-            </Button>
-            <Button size="sm" variant="ghost" onClick={onExitGuest}>
-              <LogOut className="size-4" /> Exit
-            </Button>
+          <div className="flex items-center gap-2 text-sm text-zinc-400">
+            Guest
+            <span className="font-mono text-amber-200">{me?.name ?? "..."}</span>
           </div>
         ) : (
           <div className="flex items-center gap-3 text-sm">
@@ -193,7 +177,7 @@ function Menu({ guest = false, onExitGuest }: { guest?: boolean; onExitGuest?: (
           href="/multiplayer"
           icon={<Swords className="size-5" />}
           title="Multiplayer"
-          blurb={guest ? "Sign in to play against other people." : "Quick match, custom rooms, room codes."}
+          blurb="Quick match, custom rooms, room codes."
         />
         <MenuCard
           href="/leaderboard"
@@ -209,24 +193,20 @@ function Menu({ guest = false, onExitGuest }: { guest?: boolean; onExitGuest?: (
         />
       </div>
 
-      {guest ? (
-        <Panel>
-          <h2 className="text-lg font-medium text-zinc-100">Playing as guest</h2>
-          <p className="text-sm text-zinc-400">
-            Create a free account to join multiplayer, earn a rating, and show up on the leaderboard.
-          </p>
-          <Button onClick={signIn}>
-            <LogIn className="size-4" /> Register or sign in
-          </Button>
-        </Panel>
-      ) : (
-        <Panel>
-          <h2 className="text-lg font-medium text-zinc-100">Your profile</h2>
-          <SpacetimeShell idToken={auth.user!.id_token}>
+      <Panel>
+        {guest ? (
+          <>
+            <h2 className="text-lg font-medium text-zinc-100">Guest settings</h2>
+            <GuestSettings onExit={() => onExitGuest?.()} />
+          </>
+        ) : (
+          <>
+            <h2 className="text-lg font-medium text-zinc-100">Your profile</h2>
+            <GuestLinkClaimer />
             <ProfileCard />
-          </SpacetimeShell>
-        </Panel>
-      )}
+          </>
+        )}
+      </Panel>
     </div>
   );
 }

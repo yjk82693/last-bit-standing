@@ -35,10 +35,13 @@ import {
 
 // Import all reducer arg schemas
 import CreateCustomRoomReducer from "./create_custom_room_reducer";
+import DiscardGuestReducer from "./discard_guest_reducer";
 import JoinByCodeReducer from "./join_by_code_reducer";
 import JoinRoomReducer from "./join_room_reducer";
 import KickReducer from "./kick_reducer";
 import LeaveRoomReducer from "./leave_room_reducer";
+import LinkGuestClaimReducer from "./link_guest_claim_reducer";
+import LinkGuestStartReducer from "./link_guest_start_reducer";
 import QuickMatchReducer from "./quick_match_reducer";
 import RecordScoreReducer from "./record_score_reducer";
 import SetCapacityReducer from "./set_capacity_reducer";
@@ -141,10 +144,13 @@ const tablesSchema = __schema({
 /** The schema information for all reducers in this module. This is defined the same way as the reducers would have been defined in the server, except the body of the reducer is omitted in code generation. */
 const reducersSchema = __reducers(
   __reducerSchema("create_custom_room", CreateCustomRoomReducer),
+  __reducerSchema("discard_guest", DiscardGuestReducer),
   __reducerSchema("join_by_code", JoinByCodeReducer),
   __reducerSchema("join_room", JoinRoomReducer),
   __reducerSchema("kick", KickReducer),
   __reducerSchema("leave_room", LeaveRoomReducer),
+  __reducerSchema("link_guest_claim", LinkGuestClaimReducer),
+  __reducerSchema("link_guest_start", LinkGuestStartReducer),
   __reducerSchema("quick_match", QuickMatchReducer),
   __reducerSchema("record_score", RecordScoreReducer),
   __reducerSchema("set_capacity", SetCapacityReducer),

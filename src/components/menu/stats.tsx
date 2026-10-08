@@ -19,12 +19,18 @@ export function rankedPlayers(players: readonly Player[]): Player[] {
     .sort((a, b) => b.rating - a.rating || b.wins - a.wins || a.name.localeCompare(b.name));
 }
 
-export function ProfileCard() {
+// The connected player's own row, once the subscription has it.
+export function useMe(): Player | undefined {
   const conn = useSpacetimeDB();
-  const [players, ready] = useTable(tables.player);
-  const me = conn.identity
+  const [players] = useTable(tables.player);
+  return conn.identity
     ? players.find((p) => conn.identity && p.identity.isEqual(conn.identity))
     : undefined;
+}
+
+export function ProfileCard({ guest = false }: { guest?: boolean }) {
+  const [players, ready] = useTable(tables.player);
+  const me = useMe();
 
   if (!ready || !me) {
     return <p className="text-sm text-zinc-500">Loading your stats...</p>;
@@ -32,14 +38,21 @@ export function ProfileCard() {
   const rank = rankedPlayers(players).findIndex((p) => p.identity.isEqual(me.identity)) + 1;
   const stats = [
     { label: "Rating", value: me.rating.toString() },
-    { label: "Rank", value: rank > 0 ? `#${rank}` : "n/a" },
+    { label: "Rank", value: guest ? "Unranked" : rank > 0 ? `#${rank}` : "n/a" },
     { label: "Wins", value: me.wins.toString() },
     { label: "Matches", value: me.matches.toString() },
     { label: "Accuracy", value: accuracyOf(me) },
   ];
   return (
     <div className="space-y-3">
-      <NameEditor name={me.name} />
+      {guest ? (
+        <div className="flex items-center gap-2 text-zinc-100">
+          <span className="text-zinc-400">Guest ID</span>
+          <span className="font-mono font-medium text-amber-200">{me.name}</span>
+        </div>
+      ) : (
+        <NameEditor name={me.name} />
+      )}
       <dl className="grid grid-cols-3 gap-3 sm:grid-cols-5">
         {stats.map((s) => (
           <div key={s.label} className="rounded-lg border border-zinc-800 bg-zinc-950/60 p-3">

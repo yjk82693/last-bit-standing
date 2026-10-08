@@ -37,3 +37,10 @@ export function makeConnectionBuilder(idToken?: string) {
       console.error("SpacetimeDB connect error", err);
     });
 }
+
+// Drops this browser's guest identity; the next guest connection gets a new one.
+export function forgetGuestToken() {
+  try {
+    window.localStorage.removeItem(GUEST_TOKEN_KEY);
+  } catch {}
+}

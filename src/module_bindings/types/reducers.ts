@@ -7,10 +7,13 @@ import { type Infer as __Infer } from "spacetimedb";
 
 // Import all reducer arg schemas
 import CreateCustomRoomReducer from "../create_custom_room_reducer";
+import DiscardGuestReducer from "../discard_guest_reducer";
 import JoinByCodeReducer from "../join_by_code_reducer";
 import JoinRoomReducer from "../join_room_reducer";
 import KickReducer from "../kick_reducer";
 import LeaveRoomReducer from "../leave_room_reducer";
+import LinkGuestClaimReducer from "../link_guest_claim_reducer";
+import LinkGuestStartReducer from "../link_guest_start_reducer";
 import QuickMatchReducer from "../quick_match_reducer";
 import RecordScoreReducer from "../record_score_reducer";
 import SetCapacityReducer from "../set_capacity_reducer";
@@ -19,10 +22,13 @@ import SetReadyReducer from "../set_ready_reducer";
 import StartMatchReducer from "../start_match_reducer";
 
 export type CreateCustomRoomParams = __Infer<typeof CreateCustomRoomReducer>;
+export type DiscardGuestParams = __Infer<typeof DiscardGuestReducer>;
 export type JoinByCodeParams = __Infer<typeof JoinByCodeReducer>;
 export type JoinRoomParams = __Infer<typeof JoinRoomReducer>;
 export type KickParams = __Infer<typeof KickReducer>;
 export type LeaveRoomParams = __Infer<typeof LeaveRoomReducer>;
+export type LinkGuestClaimParams = __Infer<typeof LinkGuestClaimReducer>;
+export type LinkGuestStartParams = __Infer<typeof LinkGuestStartReducer>;
 export type QuickMatchParams = __Infer<typeof QuickMatchReducer>;
 export type RecordScoreParams = __Infer<typeof RecordScoreReducer>;
 export type SetCapacityParams = __Infer<typeof SetCapacityReducer>;
