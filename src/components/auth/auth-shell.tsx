@@ -1,13 +1,12 @@
 "use client";
 
 import { useMemo } from "react";
-import { useRouter } from "next/navigation";
 import { AuthProvider } from "react-oidc-context";
 import { AUTH_CLIENT_ID, makeAuthConfig } from "@/lib/auth-config";
 
 export function AuthShell({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
-  const config = useMemo(() => makeAuthConfig(() => router.replace("/")), [router]);
+  // A full page load after sign-in, so every screen starts with the new session.
+  const config = useMemo(() => makeAuthConfig(() => window.location.replace("/")), []);
 
   if (!AUTH_CLIENT_ID) {
     return (
