@@ -17,6 +17,14 @@ export const Account = __t.object("Account", {
 });
 export type Account = __Infer<typeof Account>;
 
+export const Call = __t.object("Call", {
+  id: __t.u64(),
+  roomId: __t.u64(),
+  callerSeatId: __t.u64(),
+  targetSeatId: __t.u64(),
+});
+export type Call = __Infer<typeof Call>;
+
 export const Card = __t.object("Card", {
   id: __t.string(),
   encoding: __t.string(),
@@ -34,6 +42,91 @@ export const GuestLink = __t.object("GuestLink", {
   createdAt: __t.timestamp(),
 });
 export type GuestLink = __Infer<typeof GuestLink>;
+
+export const Hand = __t.object("Hand", {
+  id: __t.u64(),
+  seatId: __t.u64(),
+  roomId: __t.u64(),
+  cardId: __t.string(),
+  encoding: __t.string(),
+  glyph: __t.string(),
+  value: __t.u32(),
+  name: __t.string(),
+  flavor: __t.string(),
+  rarity: __t.string(),
+});
+export type Hand = __Infer<typeof Hand>;
+
+export const Match = __t.object("Match", {
+  roomId: __t.u64(),
+  round: __t.u32(),
+  phase: __t.string(),
+  promptId: __t.string(),
+  roundStartedAt: __t.timestamp(),
+  phaseEndsAt: __t.timestamp(),
+  answer: __t.string(),
+  usedPrompts: __t.string(),
+});
+export type Match = __Infer<typeof Match>;
+
+export const MatchEvent = __t.object("MatchEvent", {
+  id: __t.u64(),
+  roomId: __t.u64(),
+  round: __t.u32(),
+  tone: __t.string(),
+  text: __t.string(),
+});
+export type MatchEvent = __Infer<typeof MatchEvent>;
+
+export const MatchSeat = __t.object("MatchSeat", {
+  seatId: __t.u64(),
+  roomId: __t.u64(),
+  identity: __t.identity(),
+  played: __t.bool(),
+  locked: __t.bool(),
+  cardGlyph: __t.string(),
+  cardEncoding: __t.string(),
+  cardValue: __t.u32(),
+  cardName: __t.string(),
+  cardRarity: __t.string(),
+  wasCorrect: __t.bool(),
+  lastResult: __t.string(),
+  score: __t.u32(),
+  streak: __t.u8(),
+  correct: __t.u32(),
+  answered: __t.u32(),
+  outRound: __t.u32(),
+  place: __t.u8(),
+  ratingBefore: __t.u32(),
+  ratingAfter: __t.u32(),
+});
+export type MatchSeat = __Infer<typeof MatchSeat>;
+
+export const MatchTick = __t.object("MatchTick", {
+  scheduledId: __t.u64(),
+  scheduledAt: __t.scheduleAt(),
+  roomId: __t.u64(),
+  round: __t.u32(),
+  phase: __t.string(),
+});
+export type MatchTick = __Infer<typeof MatchTick>;
+
+export const MyCalls = __t.object("MyCalls", {});
+export type MyCalls = __Infer<typeof MyCalls>;
+
+export const MyHand = __t.object("MyHand", {});
+export type MyHand = __Infer<typeof MyHand>;
+
+export const MyPlay = __t.object("MyPlay", {});
+export type MyPlay = __Infer<typeof MyPlay>;
+
+export const Play = __t.object("Play", {
+  seatId: __t.u64(),
+  roomId: __t.u64(),
+  handId: __t.u64(),
+  playedAt: __t.timestamp(),
+});
+export type Play = __Infer<typeof Play>;
 
 export const Player = __t.object("Player", {
   identity: __t.identity(),

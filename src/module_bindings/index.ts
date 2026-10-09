@@ -36,23 +36,33 @@ import {
 // Import all reducer arg schemas
 import CreateCustomRoomReducer from "./create_custom_room_reducer";
 import DiscardGuestReducer from "./discard_guest_reducer";
+import ForfeitReducer from "./forfeit_reducer";
 import JoinByCodeReducer from "./join_by_code_reducer";
 import JoinRoomReducer from "./join_room_reducer";
 import KickReducer from "./kick_reducer";
 import LeaveRoomReducer from "./leave_room_reducer";
 import LinkGuestClaimReducer from "./link_guest_claim_reducer";
 import LinkGuestStartReducer from "./link_guest_start_reducer";
+import LockCallsReducer from "./lock_calls_reducer";
+import PlayCardReducer from "./play_card_reducer";
 import QuickMatchReducer from "./quick_match_reducer";
 import RecordScoreReducer from "./record_score_reducer";
 import SetCapacityReducer from "./set_capacity_reducer";
 import SetNameReducer from "./set_name_reducer";
 import SetReadyReducer from "./set_ready_reducer";
 import StartMatchReducer from "./start_match_reducer";
+import ToggleCallReducer from "./toggle_call_reducer";
 
 // Import all procedure arg schemas
 
 // Import all table schema definitions
 import CardRow from "./card_table";
+import MatchRow from "./match_table";
+import MatchEventRow from "./match_event_table";
+import MatchSeatRow from "./match_seat_table";
+import MyCallsRow from "./my_calls_table";
+import MyHandRow from "./my_hand_table";
+import MyPlayRow from "./my_play_table";
 import PlayerRow from "./player_table";
 import PromptRow from "./prompt_table";
 import RoomRow from "./room_table";
@@ -74,6 +84,45 @@ const tablesSchema = __schema({
       { name: 'card_id_key', constraint: 'unique', columns: ['id'] },
     ],
   }, CardRow),
+  match: __table({
+    name: 'match',
+    indexes: [
+      { accessor: 'roomId', name: 'match_room_id_idx_btree', algorithm: 'btree', columns: [
+        'roomId',
+      ] },
+    ],
+    constraints: [
+      { name: 'match_room_id_key', constraint: 'unique', columns: ['roomId'] },
+    ],
+  }, MatchRow),
+  matchEvent: __table({
+    name: 'match_event',
+    indexes: [
+      { accessor: 'id', name: 'match_event_id_idx_btree', algorithm: 'btree', columns: [
+        'id',
+      ] },
+      { accessor: 'roomId', name: 'match_event_room_id_idx_btree', algorithm: 'btree', columns: [
+        'roomId',
+      ] },
+    ],
+    constraints: [
+      { name: 'match_event_id_key', constraint: 'unique', columns: ['id'] },
+    ],
+  }, MatchEventRow),
+  matchSeat: __table({
+    name: 'match_seat',
+    indexes: [
+      { accessor: 'roomId', name: 'match_seat_room_id_idx_btree', algorithm: 'btree', columns: [
+        'roomId',
+      ] },
+      { accessor: 'seatId', name: 'match_seat_seat_id_idx_btree', algorithm: 'btree', columns: [
+        'seatId',
+      ] },
+    ],
+    constraints: [
+      { name: 'match_seat_seat_id_key', constraint: 'unique', columns: ['seatId'] },
+    ],
+  }, MatchSeatRow),
   player: __table({
     name: 'player',
     indexes: [
@@ -139,46 +188,139 @@ const tablesSchema = __schema({
       { name: 'seat_id_key', constraint: 'unique', columns: ['id'] },
     ],
   }, SeatRow),
+  myCalls: __table({
+    name: 'my_calls',
+    indexes: [
+    ],
+    constraints: [
+    ],
+  }, MyCallsRow),
+  myHand: __table({
+    name: 'my_hand',
+    indexes: [
+    ],
+    constraints: [
+    ],
+  }, MyHandRow),
+  myPlay: __table({
+    name: 'my_play',
+    indexes: [
+    ],
+    constraints: [
+    ],
+  }, MyPlayRow),
 });
 
 /** The schema information for all reducers in this module. This is defined the same way as the reducers would have been defined in the server, except the body of the reducer is omitted in code generation. */
 const reducersSchema = __reducers(
   __reducerSchema("create_custom_room", CreateCustomRoomReducer),
   __reducerSchema("discard_guest", DiscardGuestReducer),
+  __reducerSchema("forfeit", ForfeitReducer),
   __reducerSchema("join_by_code", JoinByCodeReducer),
   __reducerSchema("join_room", JoinRoomReducer),
   __reducerSchema("kick", KickReducer),
   __reducerSchema("leave_room", LeaveRoomReducer),
   __reducerSchema("link_guest_claim", LinkGuestClaimReducer),
   __reducerSchema("link_guest_start", LinkGuestStartReducer),
+  __reducerSchema("lock_calls", LockCallsReducer),
+  __reducerSchema("play_card", PlayCardReducer),
   __reducerSchema("quick_match", QuickMatchReducer),
   __reducerSchema("record_score", RecordScoreReducer),
   __reducerSchema("set_capacity", SetCapacityReducer),
   __reducerSchema("set_name", SetNameReducer),
   __reducerSchema("set_ready", SetReadyReducer),
   __reducerSchema("start_match", StartMatchReducer),
+  __reducerSchema("toggle_call", ToggleCallReducer),
 );
 
 /** The schema information for all procedures in this module. This is defined the same way as the procedures would have been defined in the server. */
 const proceduresSchema = __procedures(
 );
 
+type __SchemaWithTableAccessorAliases = Omit<typeof tablesSchema.schemaType, "tables"> & {
+  tables: typeof tablesSchema.schemaType.tables & {
+    /** @deprecated Use `matchEvent` instead. This alias will be removed in the next major version. */
+    readonly "match_event": Omit<typeof tablesSchema.schemaType.tables["matchEvent"], "accessorName"> & { readonly accessorName: "match_event" };
+    /** @deprecated Use `matchSeat` instead. This alias will be removed in the next major version. */
+    readonly "match_seat": Omit<typeof tablesSchema.schemaType.tables["matchSeat"], "accessorName"> & { readonly accessorName: "match_seat" };
+    /** @deprecated Use `myCalls` instead. This alias will be removed in the next major version. */
+    readonly "my_calls": Omit<typeof tablesSchema.schemaType.tables["myCalls"], "accessorName"> & { readonly accessorName: "my_calls" };
+    /** @deprecated Use `myHand` instead. This alias will be removed in the next major version. */
+    readonly "my_hand": Omit<typeof tablesSchema.schemaType.tables["myHand"], "accessorName"> & { readonly accessorName: "my_hand" };
+    /** @deprecated Use `myPlay` instead. This alias will be removed in the next major version. */
+    readonly "my_play": Omit<typeof tablesSchema.schemaType.tables["myPlay"], "accessorName"> & { readonly accessorName: "my_play" };
+  };
+};
+
 /** The remote SpacetimeDB module schema, both runtime and type information. */
 const REMOTE_MODULE = {
   versionInfo: {
     cliVersion: "2.10.2" as const,
   },
-  tables: tablesSchema.schemaType.tables,
+  tables: tablesSchema.schemaType.tables as __SchemaWithTableAccessorAliases["tables"],
   reducers: reducersSchema.reducersType.reducers,
   ...proceduresSchema,
 } satisfies __RemoteModule<
-  typeof tablesSchema.schemaType,
+  __SchemaWithTableAccessorAliases,
   typeof reducersSchema.reducersType,
   typeof proceduresSchema
 >;
 
+const tableAccessorAliases = {
+  "match_event": "matchEvent",
+  "match_seat": "matchSeat",
+  "my_calls": "myCalls",
+  "my_hand": "myHand",
+  "my_play": "myPlay",
+} as const;
+
+function __withTableAccessorAliases<T extends object>(target: T, freeze = false): T {
+  const out = Object.create(Object.getPrototypeOf(target)) as T & Record<string, unknown>;
+  Object.defineProperties(out, Object.getOwnPropertyDescriptors(target));
+  for (const [deprecatedAccessor, targetAccessor] of Object.entries(tableAccessorAliases)) {
+    if (deprecatedAccessor in out) {
+      continue;
+    }
+    Object.defineProperty(out, deprecatedAccessor, {
+      enumerable: true,
+      configurable: false,
+      get: () => out[targetAccessor],
+    });
+  }
+  return freeze ? Object.freeze(out) : out;
+}
+
+type __DbViewBase = __DbConnectionImpl<typeof REMOTE_MODULE>["db"];
+export type DbView = __DbViewBase & {
+  /** @deprecated Use `matchEvent` instead. This alias will be removed in the next major version. */
+  readonly "match_event": __DbViewBase["matchEvent"];
+  /** @deprecated Use `matchSeat` instead. This alias will be removed in the next major version. */
+  readonly "match_seat": __DbViewBase["matchSeat"];
+  /** @deprecated Use `myCalls` instead. This alias will be removed in the next major version. */
+  readonly "my_calls": __DbViewBase["myCalls"];
+  /** @deprecated Use `myHand` instead. This alias will be removed in the next major version. */
+  readonly "my_hand": __DbViewBase["myHand"];
+  /** @deprecated Use `myPlay` instead. This alias will be removed in the next major version. */
+  readonly "my_play": __DbViewBase["myPlay"];
+};
+
+type __TablesBase = __QueryBuilder<typeof tablesSchema.schemaType>;
+export type Tables = __TablesBase & {
+  /** @deprecated Use `matchEvent` instead. This alias will be removed in the next major version. */
+  readonly "match_event": __TablesBase["matchEvent"];
+  /** @deprecated Use `matchSeat` instead. This alias will be removed in the next major version. */
+  readonly "match_seat": __TablesBase["matchSeat"];
+  /** @deprecated Use `myCalls` instead. This alias will be removed in the next major version. */
+  readonly "my_calls": __TablesBase["myCalls"];
+  /** @deprecated Use `myHand` instead. This alias will be removed in the next major version. */
+  readonly "my_hand": __TablesBase["myHand"];
+  /** @deprecated Use `myPlay` instead. This alias will be removed in the next major version. */
+  readonly "my_play": __TablesBase["myPlay"];
+};
+
 /** The tables available in this remote SpacetimeDB module. Each table reference doubles as a query builder. */
-export const tables: __QueryBuilder<typeof tablesSchema.schemaType> = __makeQueryBuilder(tablesSchema.schemaType);
+const tablesBase: __TablesBase = __makeQueryBuilder(tablesSchema.schemaType);
+export const tables: Tables = __withTableAccessorAliases(tablesBase, true) as Tables;
 
 /** The reducers available in this remote SpacetimeDB module. */
 export const reducers = __convertToAccessorMap(reducersSchema.reducersType.reducers);
@@ -187,13 +329,13 @@ export const reducers = __convertToAccessorMap(reducersSchema.reducersType.reduc
 export const procedures = __convertToAccessorMap(proceduresSchema.procedures);
 
 /** The context type returned in callbacks for all possible events. */
-export type EventContext = __EventContextInterface<typeof REMOTE_MODULE>;
+export type EventContext = Omit<__EventContextInterface<typeof REMOTE_MODULE>, "db"> & { db: DbView };
 /** The context type returned in callbacks for reducer events. */
-export type ReducerEventContext = __ReducerEventContextInterface<typeof REMOTE_MODULE>;
+export type ReducerEventContext = Omit<__ReducerEventContextInterface<typeof REMOTE_MODULE>, "db"> & { db: DbView };
 /** The context type returned in callbacks for subscription events. */
-export type SubscriptionEventContext = __SubscriptionEventContextInterface<typeof REMOTE_MODULE>;
+export type SubscriptionEventContext = Omit<__SubscriptionEventContextInterface<typeof REMOTE_MODULE>, "db"> & { db: DbView };
 /** The context type returned in callbacks for error events. */
-export type ErrorContext = __ErrorContextInterface<typeof REMOTE_MODULE>;
+export type ErrorContext = Omit<__ErrorContextInterface<typeof REMOTE_MODULE>, "db"> & { db: DbView };
 /** The subscription handle type to manage active subscriptions created from a {@link SubscriptionBuilder}. */
 export type SubscriptionHandle = __SubscriptionHandleImpl<typeof REMOTE_MODULE>;
 
@@ -205,6 +347,13 @@ export class DbConnectionBuilder extends __DbConnectionBuilder<DbConnection> {}
 
 /** The typed database connection to manage connections to the remote SpacetimeDB instance. This class has type information specific to the generated module. */
 export class DbConnection extends __DbConnectionImpl<typeof REMOTE_MODULE> {
+  declare db: DbView;
+
+  constructor(config: __DbConnectionConfig<typeof REMOTE_MODULE>) {
+    super(config);
+    this.db = __withTableAccessorAliases(this.db) as DbView;
+  }
+
   /** Creates a new {@link DbConnectionBuilder} to configure and connect to the remote SpacetimeDB instance. */
   static builder = (): DbConnectionBuilder => {
     return new DbConnectionBuilder(REMOTE_MODULE, (config: __DbConnectionConfig<typeof REMOTE_MODULE>) => new DbConnection(config));

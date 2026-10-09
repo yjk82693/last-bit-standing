@@ -15,6 +15,7 @@ import { AuthShell } from "@/components/auth/auth-shell";
 import { SpacetimeShell } from "@/components/auth/spacetime-shell";
 import { MainMenuButton } from "@/components/main-menu-button";
 import { useGuestMode } from "@/lib/guest";
+import { MatchTable } from "@/components/multiplayer/match-table";
 
 const QUICK_SIZES = [2, 3, 4] as const;
 
@@ -98,7 +99,7 @@ function Shell() {
   const mySeat = seats.find((s) => {
     if (!sameId(s.identity, me)) return false;
     const r = rooms.find((x) => x.id === s.roomId);
-    return r && r.phase !== "finished";
+    return Boolean(r);
   });
   const myRoom = mySeat ? rooms.find((r) => r.id === mySeat.roomId) : undefined;
 
@@ -114,7 +115,9 @@ function Shell() {
         <MainMenuButton />
       </header>
 
-      {myRoom && mySeat ? (
+      {myRoom && mySeat && (myRoom.phase === "playing" || myRoom.phase === "finished") ? (
+        <MatchTable room={myRoom} players={players} me={me} />
+      ) : myRoom && mySeat ? (
         <WaitingRoom room={myRoom} seats={seats} players={players} me={me} />
       ) : (
         <Lobby rooms={rooms} seats={seats} />

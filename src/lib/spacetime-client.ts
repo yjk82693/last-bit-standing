@@ -31,7 +31,17 @@ export function makeConnectionBuilder(idToken?: string) {
       }
       conn
         .subscriptionBuilder()
-        .subscribe([tables.player, tables.room, tables.seat]);
+        .subscribe([
+          tables.player,
+          tables.room,
+          tables.seat,
+          tables.match,
+          tables.matchSeat,
+          tables.matchEvent,
+          tables.myHand,
+          tables.myPlay,
+          tables.myCalls,
+        ]);
     })
     .onConnectError((_ctx, err) => {
       console.error("SpacetimeDB connect error", err);
