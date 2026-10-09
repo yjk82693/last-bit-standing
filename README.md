@@ -53,3 +53,9 @@ npx vercel --yes --prod --name last-bit-standing
 ```
 
 No required environment variables. Add the SpacetimeDB host/name above only if you published the module.
+
+## Origin
+
+Last Bit Standing started as a team project at HopHacks 2026
+([original repo](https://github.com/Pespinosa2004/ai-language-showdown)).
+This fork adds SpacetimeDB multiplayer, accounts, guest mode, ranked ratings and a leaderboard.
