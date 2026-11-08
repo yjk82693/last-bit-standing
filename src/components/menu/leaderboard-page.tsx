@@ -17,7 +17,7 @@ export function LeaderboardPage() {
 function Leaderboard() {
   const auth = useAuth();
   if (auth.isLoading) {
-    return <p className="mx-auto max-w-4xl px-4 py-10 text-zinc-500">Loading...</p>;
+    return <p className="mx-auto max-w-4xl px-4 py-10 text-lbs-text-3">Loading...</p>;
   }
   const idToken = auth.isAuthenticated ? auth.user?.id_token : undefined;
 
@@ -25,8 +25,8 @@ function Leaderboard() {
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-8 px-4 py-10">
       <header className="flex items-end justify-between gap-4">
         <div className="space-y-1">
-          <p className="font-mono text-xs tracking-[0.28em] text-amber-200/80">RANKED</p>
-          <h1 className="text-3xl font-semibold tracking-tight text-zinc-50 sm:text-4xl">
+          <p className="font-mono text-xs tracking-[0.28em] text-lbs-accent-2/80">RANKED</p>
+          <h1 className="text-3xl font-semibold tracking-tight text-lbs-text-hi sm:text-4xl">
             Leaderboard
           </h1>
         </div>
@@ -34,11 +34,11 @@ function Leaderboard() {
       </header>
       <SpacetimeShell idToken={idToken}>
         {idToken && (
-          <section className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-5">
+          <section className="rounded-xl border border-lbs-line-solid bg-lbs-panel p-5">
             <ProfileCard />
           </section>
         )}
-        <section className="mt-6 rounded-xl border border-zinc-800 bg-zinc-900/60 p-5">
+        <section className="mt-6 rounded-xl border border-lbs-line-solid bg-lbs-panel p-5">
           <LeaderboardTable />
         </section>
       </SpacetimeShell>

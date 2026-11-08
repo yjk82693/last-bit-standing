@@ -46,6 +46,85 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-lbs-body: var(--lbs-body);
+  --color-lbs-text-max: var(--lbs-text-max);
+  --color-lbs-text-hi: var(--lbs-text-hi);
+  --color-lbs-text: var(--lbs-text);
+  --color-lbs-text-soft: var(--lbs-text-soft);
+  --color-lbs-text-dim: var(--lbs-text-dim);
+  --color-lbs-text-2: var(--lbs-text-2);
+  --color-lbs-text-3: var(--lbs-text-3);
+  --color-lbs-text-4: var(--lbs-text-4);
+  --color-lbs-on-accent: var(--lbs-on-accent);
+  --color-lbs-dialog: var(--lbs-dialog);
+  --color-lbs-accent: var(--lbs-accent);
+  --color-lbs-accent-2: var(--lbs-accent-2);
+  --color-lbs-accent-3: var(--lbs-accent-3);
+  --color-lbs-accent-wash: var(--lbs-accent-wash);
+  --color-lbs-bad: var(--lbs-bad);
+  --color-lbs-bad-2: var(--lbs-bad-2);
+  --color-lbs-line: var(--lbs-line);
+  --color-lbs-line-faint: var(--lbs-line-faint);
+  --color-lbs-line-strong: var(--lbs-line-strong);
+  --color-lbs-line-solid: var(--lbs-line-solid);
+  --color-lbs-line-control: var(--lbs-line-control);
+  --color-lbs-line-muted: var(--lbs-line-muted);
+  --color-lbs-wash: var(--lbs-wash);
+  --color-lbs-hover: var(--lbs-hover);
+  --color-lbs-panel: var(--lbs-panel);
+  --color-lbs-panel-soft: var(--lbs-panel-soft);
+  --color-lbs-panel-strong: var(--lbs-panel-strong);
+  --color-lbs-panel-hover: var(--lbs-panel-hover);
+  --color-lbs-inset: var(--lbs-inset);
+  --color-lbs-inset-strong: var(--lbs-inset-strong);
+  --color-lbs-well-faint: var(--lbs-well-faint);
+  --color-lbs-well-light: var(--lbs-well-light);
+  --color-lbs-well: var(--lbs-well);
+  --color-lbs-well-mid: var(--lbs-well-mid);
+  --color-lbs-well-deep: var(--lbs-well-deep);
+  --color-lbs-well-strong: var(--lbs-well-strong);
+  --color-lbs-scrim: var(--lbs-scrim);
+  --color-lbs-shadow: var(--lbs-shadow);
+  --color-lbs-backdrop: var(--lbs-backdrop);
+  --color-lbs-backdrop-veil: var(--lbs-backdrop-veil);
+  --color-lbs-backdrop-ink: var(--lbs-backdrop-ink);
+  --color-lbs-rail: var(--lbs-rail);
+  --color-lbs-seat: var(--lbs-seat);
+  --color-lbs-seat-out: var(--lbs-seat-out);
+  --color-lbs-seat-veil: var(--lbs-seat-veil);
+  --color-lbs-card-binary: var(--lbs-card-binary);
+  --color-lbs-card-hex: var(--lbs-card-hex);
+  --color-lbs-card-ascii: var(--lbs-card-ascii);
+  --color-lbs-card-base: var(--lbs-card-base);
+  --color-lbs-enc-binary: var(--lbs-enc-binary);
+  --color-lbs-enc-hex: var(--lbs-enc-hex);
+  --color-lbs-enc-ascii: var(--lbs-enc-ascii);
+  --color-lbs-card-selected: var(--lbs-card-selected);
+  --color-lbs-card-label: var(--lbs-card-label);
+  --color-lbs-card-ink: var(--lbs-card-ink);
+  --color-lbs-card-ink-2: var(--lbs-card-ink-2);
+  --color-lbs-card-back: var(--lbs-card-back);
+  --color-lbs-card-back-line: var(--lbs-card-back-line);
+  --color-lbs-correct: var(--lbs-correct);
+  --color-lbs-correct-ink: var(--lbs-correct-ink);
+  --color-lbs-close: var(--lbs-close);
+  --color-lbs-close-ink: var(--lbs-close-ink);
+  --color-lbs-wrong: var(--lbs-wrong);
+  --color-lbs-wrong-ink: var(--lbs-wrong-ink);
+  --color-lbs-called: var(--lbs-called);
+  --color-lbs-called-ink: var(--lbs-called-ink);
+  --color-lbs-life: var(--lbs-life);
+  --color-lbs-life-break: var(--lbs-life-break);
+  --color-lbs-life-empty: var(--lbs-life-empty);
+  --color-lbs-timer-track: var(--lbs-timer-track);
+  --color-lbs-timer: var(--lbs-timer);
+  --color-lbs-timer-bonus: var(--lbs-timer-bonus);
+  --color-lbs-timer-low: var(--lbs-timer-low);
+  --color-lbs-banner: var(--lbs-banner);
+  --color-lbs-win: var(--lbs-win);
+  --color-lbs-lose: var(--lbs-lose);
 }
 
 :root {
@@ -82,6 +161,114 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
   --focus-ring: var(--ring);
+
+  /*
+   * Game colours (--lbs-*). Components use these through Tailwind classes such
+   * as text-lbs-text-2 or bg-lbs-panel instead of palette classes, so a theme
+   * only changes values here. Values below are the current look.
+   */
+  --success: oklch(84.5% 0.143 164.978);
+  --warning: oklch(92.4% 0.12 95.746);
+  /* Page and text */
+  --lbs-body: #0b1511;
+  --lbs-text-max: #fff;
+  --lbs-text-hi: oklch(98.5% 0 none);
+  --lbs-text: oklch(96.7% 0.001 286.375);
+  --lbs-text-soft: oklch(92% 0.004 286.32);
+  --lbs-text-dim: oklch(87.1% 0.006 286.286);
+  --lbs-text-2: oklch(70.5% 0.015 286.067);
+  --lbs-text-3: oklch(55.2% 0.016 285.938);
+  --lbs-text-4: oklch(44.2% 0.017 285.786);
+  --lbs-on-accent: oklch(14.1% 0.005 285.823);
+  --lbs-dialog: #10151c;
+  /* Accent (highlights, selected tabs, headings in caps) */
+  --lbs-accent: oklch(87.9% 0.169 91.605);
+  --lbs-accent-2: oklch(92.4% 0.12 95.746);
+  --lbs-accent-3: oklch(96.2% 0.059 95.617);
+  --lbs-accent-wash: color-mix(in oklab, oklch(27.9% 0.077 45.635) 50%, transparent);
+  /* Status text */
+  --lbs-bad: oklch(80.8% 0.114 19.571);
+  --lbs-bad-2: oklch(81% 0.117 11.638);
+  /* Lines */
+  --lbs-line: color-mix(in oklab, #fff 10%, transparent);
+  --lbs-line-faint: color-mix(in oklab, #fff 5%, transparent);
+  --lbs-line-strong: color-mix(in oklab, #fff 15%, transparent);
+  --lbs-line-solid: oklch(27.4% 0.006 286.033);
+  --lbs-line-control: oklch(37% 0.013 285.805);
+  --lbs-line-muted: color-mix(in oklab, oklch(55.2% 0.016 285.938) 50%, transparent);
+  /* Surfaces: panels on the page, wells on the table, overlays */
+  --lbs-wash: color-mix(in oklab, #fff 5%, transparent);
+  --lbs-hover: color-mix(in oklab, #fff 10%, transparent);
+  --lbs-panel: color-mix(in oklab, oklch(21% 0.006 285.885) 60%, transparent);
+  --lbs-panel-soft: color-mix(in oklab, oklch(21% 0.006 285.885) 40%, transparent);
+  --lbs-panel-strong: color-mix(in oklab, oklch(21% 0.006 285.885) 80%, transparent);
+  --lbs-panel-hover: oklch(21% 0.006 285.885);
+  --lbs-inset: color-mix(in oklab, oklch(14.1% 0.005 285.823) 60%, transparent);
+  --lbs-inset-strong: color-mix(in oklab, oklch(14.1% 0.005 285.823) 70%, transparent);
+  --lbs-well-faint: color-mix(in oklab, #000 20%, transparent);
+  --lbs-well-light: color-mix(in oklab, #000 25%, transparent);
+  --lbs-well: color-mix(in oklab, #000 30%, transparent);
+  --lbs-well-mid: color-mix(in oklab, #000 35%, transparent);
+  --lbs-well-deep: color-mix(in oklab, #000 40%, transparent);
+  --lbs-well-strong: color-mix(in oklab, #000 50%, transparent);
+  --lbs-scrim: color-mix(in oklab, #000 75%, transparent);
+  --lbs-shadow: color-mix(in oklab, #000 50%, transparent);
+  /* Sign-in backdrop */
+  --lbs-backdrop: oklch(14.1% 0.005 285.823);
+  --lbs-backdrop-veil: color-mix(in oklab, oklch(14.1% 0.005 285.823) 70%, transparent);
+  --lbs-backdrop-ink: oklch(92.4% 0.12 95.746);
+  --lbs-backdrop-center: rgba(9, 9, 11, 0.85);
+  --lbs-backdrop-glow: rgba(251, 191, 36, 0.1);
+  --lbs-backdrop-edge: rgba(9, 9, 11, 0.9);
+  /* Table */
+  --lbs-felt: #1c4a38;
+  --lbs-felt-mid: #10261d;
+  --lbs-felt-edge: #0b1511;
+  --lbs-rail: color-mix(in oklab, oklch(37.8% 0.077 168.94) 50%, transparent);
+  --lbs-seat: color-mix(in oklab, #000 35%, transparent);
+  --lbs-seat-out: color-mix(in oklab, oklch(14.1% 0.005 285.823) 80%, transparent);
+  --lbs-seat-veil: color-mix(in oklab, oklch(14.1% 0.005 285.823) 55%, transparent);
+  /* Cards */
+  --lbs-card-binary: oklch(27.9% 0.041 260.031);
+  --lbs-card-hex: oklch(27.7% 0.046 192.524);
+  --lbs-card-ascii: oklch(29.3% 0.136 325.661);
+  --lbs-card-base: oklch(12.9% 0.042 264.695);
+  --lbs-enc-binary: oklch(74.6% 0.16 232.661);
+  --lbs-enc-hex: oklch(77.7% 0.152 181.912);
+  --lbs-enc-ascii: oklch(74% 0.238 322.16);
+  --lbs-card-selected: oklch(87.9% 0.169 91.605);
+  --lbs-card-label: oklch(92.4% 0.12 95.746);
+  --lbs-card-ink: oklch(98.7% 0.022 95.277);
+  --lbs-card-ink-2: oklch(96.2% 0.059 95.617);
+  --lbs-card-shadow: rgba(0, 0, 0, 0.8);
+  --lbs-card-back: color-mix(in oklab, #000 20%, transparent);
+  --lbs-card-back-line: color-mix(in oklab, #fff 15%, transparent);
+  /* Result stamps */
+  --lbs-correct: oklch(84.5% 0.143 164.978);
+  --lbs-correct-ink: oklch(90.5% 0.093 164.15);
+  --lbs-close: oklch(87.9% 0.169 91.605);
+  --lbs-close-ink: oklch(92.4% 0.12 95.746);
+  --lbs-wrong: oklch(70.4% 0.191 22.216);
+  --lbs-wrong-ink: oklch(80.8% 0.114 19.571);
+  --lbs-called: oklch(63.7% 0.237 25.331);
+  --lbs-called-ink: oklch(80.8% 0.114 19.571);
+  --lbs-correct-glow: rgb(52 211 153);
+  /* Lives */
+  --lbs-life: oklch(71.2% 0.194 13.428);
+  --lbs-life-break: oklch(81% 0.117 11.638);
+  --lbs-life-empty: oklch(44.2% 0.017 285.786);
+  --lbs-life-glow: rgb(251 113 133 / 80%);
+  /* Timer */
+  --lbs-timer-track: color-mix(in oklab, #000 40%, transparent);
+  --lbs-timer: color-mix(in oklab, oklch(82.8% 0.189 84.429) 80%, transparent);
+  --lbs-timer-bonus: oklch(87.9% 0.169 91.605);
+  --lbs-timer-low: oklch(71.2% 0.194 13.428);
+  /* Win / lose banner */
+  --lbs-banner: color-mix(in oklab, #000 80%, transparent);
+  --lbs-win: oklch(87.9% 0.169 91.605);
+  --lbs-lose: oklch(71.2% 0.194 13.428);
+  --lbs-win-glow: rgba(252, 211, 77, 0.35);
+  --lbs-lose-glow: rgba(251, 113, 133, 0.35);
 }
 
 .dark {
@@ -172,10 +359,10 @@
 @keyframes lbs-glow {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgb(52 211 153 / 0%);
+    box-shadow: 0 0 0 0 transparent;
   }
   50% {
-    box-shadow: 0 0 28px 6px rgb(52 211 153 / 35%);
+    box-shadow: 0 0 28px 6px color-mix(in srgb, var(--lbs-correct-glow) 35%, transparent);
   }
 }
 
@@ -212,7 +399,7 @@
   }
   30% {
     transform: scale(1.45) rotate(-22deg);
-    filter: drop-shadow(0 0 6px rgb(251 113 133 / 80%));
+    filter: drop-shadow(0 0 6px var(--lbs-life-glow));
   }
   55% {
     transform: scale(0.82) rotate(14deg);

@@ -22,7 +22,7 @@ export function MainMenuPage() {
 
 function Panel({ children }: { children: React.ReactNode }) {
   return (
-    <section className="space-y-3 rounded-xl border border-zinc-800 bg-zinc-900/60 p-5">
+    <section className="space-y-3 rounded-xl border border-lbs-line-solid bg-lbs-panel p-5">
       {children}
     </section>
   );
@@ -35,7 +35,7 @@ function MainMenu() {
 
   if (auth.isLoading) {
     return (
-      <div className="flex min-h-[70vh] items-center justify-center text-zinc-500">
+      <div className="flex min-h-[70vh] items-center justify-center text-lbs-text-3">
         Checking sign-in...
       </div>
     );
@@ -74,16 +74,16 @@ function SignInScreen({ onGuest }: { onGuest: () => void }) {
       <BinaryBackdrop />
       <div className="relative mx-auto flex min-h-screen w-full max-w-md flex-col justify-center gap-8 px-4 py-10">
         <div className="space-y-2 text-center sm:-mx-24">
-          <p className="font-mono text-xs tracking-[0.28em] text-amber-200/80">
+          <p className="font-mono text-xs tracking-[0.28em] text-lbs-accent-2/80">
             BINARY · HEX · ASCII
           </p>
-          <h1 className="text-4xl font-semibold tracking-tight text-zinc-50 sm:text-5xl">
+          <h1 className="text-4xl font-semibold tracking-tight text-lbs-text-hi sm:text-5xl">
             Last Bit Standing
           </h1>
         </div>
 
-        <section className="rounded-2xl border border-zinc-800 bg-zinc-900/80 p-2 shadow-2xl shadow-black/50 backdrop-blur">
-          <div role="tablist" className="grid grid-cols-2 gap-1 rounded-xl bg-zinc-950/70 p-1">
+        <section className="rounded-2xl border border-lbs-line-solid bg-lbs-panel-strong p-2 shadow-2xl shadow-lbs-shadow backdrop-blur">
+          <div role="tablist" className="grid grid-cols-2 gap-1 rounded-xl bg-lbs-inset-strong p-1">
             {(["signin", "register"] as const).map((t) => (
               <button
                 key={t}
@@ -93,7 +93,7 @@ function SignInScreen({ onGuest }: { onGuest: () => void }) {
                 onClick={() => setTab(t)}
                 className={
                   "rounded-lg py-2 text-sm font-medium transition " +
-                  (tab === t ? "bg-amber-300 text-zinc-950" : "text-zinc-400 hover:text-zinc-100")
+                  (tab === t ? "bg-lbs-accent text-lbs-on-accent" : "text-lbs-text-2 hover:text-lbs-text")
                 }
               >
                 {t === "signin" ? "Sign in" : "Register"}
@@ -103,30 +103,30 @@ function SignInScreen({ onGuest }: { onGuest: () => void }) {
 
           <div className="space-y-4 p-4">
             <div className="space-y-1">
-              <h2 className="text-lg font-medium text-zinc-100">{copy.title}</h2>
-              <p className="text-sm text-zinc-400">{copy.body}</p>
+              <h2 className="text-lg font-medium text-lbs-text">{copy.title}</h2>
+              <p className="text-sm text-lbs-text-2">{copy.body}</p>
             </div>
             <Button className="w-full" size="lg" onClick={() => void auth.signinRedirect()}>
               <LogIn className="size-4" />
               {tab === "signin" ? "Sign in with one click" : "Register with one click"}
             </Button>
-            <p className="text-center text-xs text-zinc-500">
+            <p className="text-center text-xs text-lbs-text-3">
               Continue with Google or email on the next screen.
             </p>
-            <div className="flex items-center gap-3 text-xs text-zinc-600">
-              <span className="h-px flex-1 bg-zinc-800" />
+            <div className="flex items-center gap-3 text-xs text-lbs-text-4">
+              <span className="h-px flex-1 bg-lbs-line-solid" />
               or
-              <span className="h-px flex-1 bg-zinc-800" />
+              <span className="h-px flex-1 bg-lbs-line-solid" />
             </div>
             <Button className="w-full" variant="outline" onClick={onGuest}>
               <UserRound className="size-4" /> Play as guest
             </Button>
-            <p className="text-center text-xs text-zinc-500">
+            <p className="text-center text-xs text-lbs-text-3">
               Get a random guest ID and play everything, multiplayer included. Link it to an
               account later from guest settings to keep your record.
             </p>
             {auth.error && (
-              <p className="text-sm text-red-300">Sign-in problem: {auth.error.message}</p>
+              <p className="text-sm text-lbs-bad">Sign-in problem: {auth.error.message}</p>
             )}
           </div>
         </section>
@@ -144,21 +144,21 @@ function Menu({ guest = false, onExitGuest }: { guest?: boolean; onExitGuest?: (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-8 px-4 py-10 sm:py-14">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div className="space-y-2">
-          <p className="font-mono text-xs tracking-[0.28em] text-amber-200/80">
+          <p className="font-mono text-xs tracking-[0.28em] text-lbs-accent-2/80">
             BINARY · HEX · ASCII
           </p>
-          <h1 className="text-4xl font-semibold tracking-tight text-zinc-50 sm:text-6xl">
+          <h1 className="text-4xl font-semibold tracking-tight text-lbs-text-hi sm:text-6xl">
             Last Bit Standing
           </h1>
         </div>
         {guest ? (
-          <div className="flex items-center gap-2 text-sm text-zinc-400">
+          <div className="flex items-center gap-2 text-sm text-lbs-text-2">
             Guest
-            <span className="font-mono text-amber-200">{me?.name ?? "..."}</span>
+            <span className="font-mono text-lbs-accent-2">{me?.name ?? "..."}</span>
           </div>
         ) : (
           <div className="flex items-center gap-3 text-sm">
-            <span className="text-zinc-400">{email}</span>
+            <span className="text-lbs-text-2">{email}</span>
             <Button size="sm" variant="ghost" onClick={() => void auth.signoutRedirect()}>
               <LogOut className="size-4" /> Sign out
             </Button>
@@ -196,12 +196,12 @@ function Menu({ guest = false, onExitGuest }: { guest?: boolean; onExitGuest?: (
       <Panel>
         {guest ? (
           <>
-            <h2 className="text-lg font-medium text-zinc-100">Guest settings</h2>
+            <h2 className="text-lg font-medium text-lbs-text">Guest settings</h2>
             <GuestSettings onExit={() => onExitGuest?.()} />
           </>
         ) : (
           <>
-            <h2 className="text-lg font-medium text-zinc-100">Your profile</h2>
+            <h2 className="text-lg font-medium text-lbs-text">Your profile</h2>
             <GuestLinkClaimer />
             <ProfileCard />
           </>
@@ -224,12 +224,12 @@ function MenuCard({
 }) {
   return (
     <Link href={href}>
-      <div className="flex h-full flex-col gap-2 rounded-xl border border-zinc-800 bg-zinc-900/60 p-5 transition hover:border-amber-300/50 hover:bg-zinc-900">
-        <div className="flex items-center gap-2 text-amber-200">
+      <div className="flex h-full flex-col gap-2 rounded-xl border border-lbs-line-solid bg-lbs-panel p-5 transition hover:border-lbs-accent/50 hover:bg-lbs-panel-hover">
+        <div className="flex items-center gap-2 text-lbs-accent-2">
           {icon}
-          <span className="text-lg font-medium text-zinc-50">{title}</span>
+          <span className="text-lg font-medium text-lbs-text-hi">{title}</span>
         </div>
-        <p className="text-sm text-zinc-400">{blurb}</p>
+        <p className="text-sm text-lbs-text-2">{blurb}</p>
       </div>
     </Link>
   );

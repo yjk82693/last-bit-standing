@@ -25,7 +25,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`dark ${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full bg-[#0b1511] font-sans text-zinc-100">
+      <body className="min-h-full bg-lbs-body font-sans text-lbs-text">
         <TooltipProvider>{children}</TooltipProvider>
       </body>
     </html>

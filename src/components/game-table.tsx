@@ -77,12 +77,12 @@ export function GameTable({
         <ArcadeBanner win={state.winnerId === "you"} />
       ) : null}
 
-      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 px-4 py-3">
+      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-lbs-line px-4 py-3">
         <div>
-          <p className="font-mono text-[10px] tracking-[0.24em] text-amber-200/70">
+          <p className="font-mono text-[10px] tracking-[0.24em] text-lbs-accent-2/70">
             LAST BIT STANDING
           </p>
-          <p className="text-sm text-zinc-300">
+          <p className="text-sm text-lbs-text-dim">
             Round {state.round}
             {state.phase === "accusing" ? " · call lives" : ""}
             {state.phase === "resolving" ? " · reveal" : ""}
@@ -95,7 +95,7 @@ export function GameTable({
                 variant="ghost"
                 size="sm"
                 className={cn(
-                  "gap-1.5 font-mono text-amber-200",
+                  "gap-1.5 font-mono text-lbs-accent-2",
                   !canHint && "opacity-40",
                 )}
                 disabled={!canHint}
@@ -106,8 +106,8 @@ export function GameTable({
                   className={cn(
                     "size-4",
                     state.hintOpen
-                      ? "fill-amber-300 text-amber-300"
-                      : "text-amber-200",
+                      ? "fill-lbs-accent text-lbs-accent"
+                      : "text-lbs-accent-2",
                   )}
                 />
                 <span className="text-[11px] tracking-[0.16em]">
@@ -127,14 +127,14 @@ export function GameTable({
                       : "Three lamps for the table. Each extra lamp on this question is more direct."}
             </TooltipContent>
           </Tooltip>
-          <div className="font-mono text-sm text-amber-200">
+          <div className="font-mono text-sm text-lbs-accent-2">
             Score {state.score}
             {state.lastRoundPoints > 0 && state.phase !== "prompting"
               ? ` · +${state.lastRoundPoints}`
               : ""}
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-zinc-400">Your lives</span>
+            <span className="text-xs text-lbs-text-2">Your lives</span>
             <HealthPips health={you.health} />
           </div>
           <Button variant="ghost" size="sm" onClick={onQuit}>
@@ -151,8 +151,8 @@ export function GameTable({
                 variant="ghost"
                 size="icon-sm"
                 className={cn(
-                  "text-amber-200",
-                  helpOpen && "bg-white/10 text-amber-100",
+                  "text-lbs-accent-2",
+                  helpOpen && "bg-lbs-hover text-lbs-accent-3",
                 )}
                 aria-label="Encoding help"
                 aria-expanded={helpOpen}
@@ -179,9 +179,9 @@ export function GameTable({
       />
 
       {state.hintOpen && prompt ? (
-        <div className="flex items-start gap-3 border-b border-amber-200/20 bg-amber-950/50 px-4 py-3 text-sm text-amber-100">
+        <div className="flex items-start gap-3 border-b border-lbs-accent-2/20 bg-lbs-accent-wash px-4 py-3 text-sm text-lbs-accent-3">
           <div className="min-w-0 flex-1">
-            <p className="font-mono text-[10px] tracking-[0.2em] text-amber-200/80">
+            <p className="font-mono text-[10px] tracking-[0.2em] text-lbs-accent-2/80">
               {hintLevel >= 3
                 ? "ANSWER · CLOCK PAUSED"
                 : hintLevel === 2
@@ -194,7 +194,7 @@ export function GameTable({
             type="button"
             variant="ghost"
             size="icon-sm"
-            className="mt-0.5 shrink-0 text-amber-100 hover:bg-amber-200/10"
+            className="mt-0.5 shrink-0 text-lbs-accent-3 hover:bg-lbs-accent-2/10"
             aria-label="Close hint"
             onClick={onCloseHint}
           >
@@ -203,18 +203,18 @@ export function GameTable({
         </div>
       ) : null}
 
-      <div className="h-1 w-full bg-black/40">
+      <div className="h-1 w-full bg-lbs-timer-track">
         <div
           className={cn(
             "h-full transition-[width] duration-100",
-            ratio < 0.2 ? "bg-rose-400" : liveSpeed >= 2 ? "bg-amber-300" : "bg-amber-400/80",
+            ratio < 0.2 ? "bg-lbs-timer-low" : liveSpeed >= 2 ? "bg-lbs-timer-bonus" : "bg-lbs-timer",
           )}
           style={{ width: `${ratio * 100}%` }}
         />
       </div>
 
       <div className="grid gap-4 px-3 py-4 lg:grid-cols-[1fr_220px] lg:px-6">
-        <div className="rounded-[2rem] border border-emerald-900/50 bg-[radial-gradient(ellipse_at_center,_#1c4a38_0%,_#10261d_55%,_#0b1511_100%)] p-3 shadow-inner sm:p-6">
+        <div className="rounded-[2rem] border border-lbs-rail bg-[radial-gradient(ellipse_at_center,_var(--lbs-felt)_0%,_var(--lbs-felt-mid)_55%,_var(--lbs-felt-edge)_100%)] p-3 shadow-inner sm:p-6">
           <div className="grid grid-cols-3 justify-items-center gap-2 overflow-x-auto sm:gap-3">
             <PlayerSeat
               player={byId.hexa}
@@ -245,19 +245,19 @@ export function GameTable({
             />
           </div>
 
-          <div className="mx-auto my-4 max-w-xl rounded-2xl border border-amber-200/20 bg-black/35 p-4 text-center backdrop-blur-sm">
-            <p className="font-mono text-[10px] tracking-[0.22em] text-amber-200/70">
+          <div className="mx-auto my-4 max-w-xl rounded-2xl border border-lbs-accent-2/20 bg-lbs-well-mid p-4 text-center backdrop-blur-sm">
+            <p className="font-mono text-[10px] tracking-[0.22em] text-lbs-accent-2/70">
               {state.phase === "dealing"
                 ? "SHUFFLING"
                 : prompt
                   ? `${(prompt.difficulty ?? "medium").toUpperCase()} · ${basePoints(prompt.difficulty ?? "medium")} PTS`
                   : "PROMPT"}
             </p>
-            <p className="mt-2 text-pretty text-lg font-medium text-zinc-50 sm:text-2xl">
+            <p className="mt-2 text-pretty text-lg font-medium text-lbs-text-hi sm:text-2xl">
               {prompt?.text ?? "The dealer is cutting the deck…"}
             </p>
             {state.phase === "prompting" || state.phase === "accusing" ? (
-              <p className="mt-2 font-mono text-sm text-amber-100">
+              <p className="mt-2 font-mono text-sm text-lbs-accent-3">
                 {state.hintOpen ? "PAUSED · " : ""}
                 {Math.ceil(remain / 1000)}s
                 {state.phase === "prompting" ? ` · ${liveMultiplier}` : ""}
@@ -300,18 +300,18 @@ export function GameTable({
         </div>
 
         <aside className="flex flex-col gap-3">
-          <div className="rounded-xl border border-white/10 bg-black/30 p-3">
-            <p className="text-xs tracking-wide text-zinc-400">Table log</p>
+          <div className="rounded-xl border border-lbs-line bg-lbs-well p-3">
+            <p className="text-xs tracking-wide text-lbs-text-2">Table log</p>
             <ul className="mt-2 grid max-h-56 gap-2 overflow-auto pr-1 text-sm">
               {state.logs.slice(-8).map((entry) => (
                 <li
                   key={entry.id}
                   className={cn(
                     "leading-5",
-                    entry.tone === "good" && "text-emerald-300",
-                    entry.tone === "bad" && "text-rose-300",
-                    entry.tone === "warn" && "text-amber-200",
-                    entry.tone === "neutral" && "text-zinc-400",
+                    entry.tone === "good" && "text-success",
+                    entry.tone === "bad" && "text-lbs-bad-2",
+                    entry.tone === "warn" && "text-warning",
+                    entry.tone === "neutral" && "text-lbs-text-2",
                   )}
                 >
                   {entry.text}
@@ -326,16 +326,16 @@ export function GameTable({
             <Button onClick={onNext}>Next round</Button>
           ) : null}
           {state.phase === "gameover" ? (
-            <div className="rounded-xl border border-amber-200/30 bg-black/50 p-4">
-              <p className="font-mono text-[10px] tracking-[0.2em] text-amber-200">
+            <div className="rounded-xl border border-lbs-accent-2/30 bg-lbs-well-strong p-4">
+              <p className="font-mono text-[10px] tracking-[0.2em] text-lbs-accent-2">
                 TABLE CLOSED
               </p>
-              <p className="mt-2 text-lg text-zinc-50">
+              <p className="mt-2 text-lg text-lbs-text-hi">
                 {state.winnerId === "you"
                   ? "You still have a life. Every bot is out."
                   : "You lost your last life. The models still hold the table."}
               </p>
-              <p className="mt-1 font-mono text-amber-200">Score {state.score}</p>
+              <p className="mt-1 font-mono text-lbs-accent-2">Score {state.score}</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 <Button onClick={onQuit}>
                   {state.winnerId === "you" ? "Take the win" : "Try another table"}
@@ -347,9 +347,9 @@ export function GameTable({
         </aside>
       </div>
 
-      <section className="mt-auto border-t border-white/10 bg-black/30 px-3 py-4 sm:px-6">
+      <section className="mt-auto border-t border-lbs-line bg-lbs-well px-3 py-4 sm:px-6">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-          <p className="text-sm text-zinc-300">
+          <p className="text-sm text-lbs-text-dim">
             Your hand · {you.hand.length} cards
           </p>
           <Button size="lg" disabled={!canPlay} onClick={onPlay}>
@@ -358,7 +358,7 @@ export function GameTable({
         </div>
         <div className="flex gap-3 overflow-x-auto pb-2">
           {you.hand.length === 0 ? (
-            <p className="text-sm text-zinc-500">
+            <p className="text-sm text-lbs-text-3">
               {you.played
                 ? "Card is on the table. Call a wrong bot to take a life."
                 : "No cards left in hand."}
@@ -390,10 +390,10 @@ function ArcadeBanner({ win }: { win: boolean }) {
     <div className="pointer-events-none absolute inset-x-0 top-3 z-40 flex justify-center px-4">
       <p
         className={cn(
-          "lbs-arcade rounded-sm border-2 bg-black/80 px-6 py-2 font-mono text-3xl font-black tracking-[0.28em] sm:text-5xl",
+          "lbs-arcade rounded-sm border-2 bg-lbs-banner px-6 py-2 font-mono text-3xl font-black tracking-[0.28em] sm:text-5xl",
           win
-            ? "border-amber-300 text-amber-300 shadow-[0_0_28px_rgba(252,211,77,0.35)]"
-            : "border-rose-400 text-rose-400 shadow-[0_0_28px_rgba(251,113,133,0.35)]",
+            ? "border-lbs-win text-lbs-win shadow-[0_0_28px_var(--lbs-win-glow)]"
+            : "border-lbs-lose text-lbs-lose shadow-[0_0_28px_var(--lbs-lose-glow)]",
         )}
       >
         {win ? "YOU WIN" : "YOU LOSE"}
@@ -433,7 +433,7 @@ function PlayReveal({
     >
       <div className="flex flex-wrap items-end justify-center gap-4">
         <div className="flex flex-col items-center gap-1">
-          <p className="font-mono text-[10px] tracking-[0.18em] text-zinc-400">
+          <p className="font-mono text-[10px] tracking-[0.18em] text-lbs-text-2">
             YOUR PLAY
           </p>
           <EncodingCard
@@ -446,7 +446,7 @@ function PlayReveal({
         </div>
         {showAnswerCard ? (
           <div className="flex flex-col items-center gap-1">
-            <p className="font-mono text-[10px] tracking-[0.18em] text-emerald-300/80">
+            <p className="font-mono text-[10px] tracking-[0.18em] text-success/80">
               FROM YOUR HAND
             </p>
             <EncodingCard
@@ -459,7 +459,7 @@ function PlayReveal({
         ) : null}
       </div>
       {explanation ? (
-        <p className="mt-3 text-pretty text-sm leading-5 text-zinc-300">
+        <p className="mt-3 text-pretty text-sm leading-5 text-lbs-text-dim">
           {explanation}
         </p>
       ) : null}

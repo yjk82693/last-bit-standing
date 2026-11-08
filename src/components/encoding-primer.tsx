@@ -58,7 +58,7 @@ function Sheet({
 }) {
   return (
     <article
-      className={`rounded-xl border border-white/10 bg-black/25 p-3 ${className}`}
+      className={`rounded-xl border border-lbs-line bg-lbs-well-light p-3 ${className}`}
     >
       {children}
     </article>
@@ -67,8 +67,8 @@ function Sheet({
 
 function Head({ icon: Icon, title }: { icon: LucideIcon; title: string }) {
   return (
-    <div className="mb-3 flex items-center gap-2 text-sm text-zinc-200">
-      <Icon className="size-4 text-amber-300" />
+    <div className="mb-3 flex items-center gap-2 text-sm text-lbs-text-soft">
+      <Icon className="size-4 text-lbs-accent" />
       {title}
     </div>
   );
@@ -78,13 +78,13 @@ export function EncodingPrimer() {
   return (
     <section
       id="encoding-bench"
-      className="rounded-xl border border-white/10 bg-black/20 p-4 sm:p-5"
+      className="rounded-xl border border-lbs-line bg-lbs-well-faint p-4 sm:p-5"
     >
-      <p className="font-mono text-[10px] tracking-[0.22em] text-amber-200/80">
+      <p className="font-mono text-[10px] tracking-[0.22em] text-lbs-accent-2/80">
         ENCODING BENCH
       </p>
-      <h2 className="mt-2 text-xl font-medium text-zinc-50">How the glyphs read</h2>
-      <p className="mt-2 max-w-3xl text-sm leading-6 text-zinc-400">
+      <h2 className="mt-2 text-xl font-medium text-lbs-text-hi">How the glyphs read</h2>
+      <p className="mt-2 max-w-3xl text-sm leading-6 text-lbs-text-2">
         Every card is one number written as binary lamps, a hex digit string, or
         an ASCII character. Easy rounds print that translation on the card foot.
         Medium keeps the flavor line. Hard hides it — use this bench before you
@@ -93,7 +93,7 @@ export function EncodingPrimer() {
 
       <Sheet className="mt-5">
         <Head icon={Layers} title="Same number · three writings" />
-        <p className="mb-3 text-xs leading-5 text-zinc-500">
+        <p className="mb-3 text-xs leading-5 text-lbs-text-3">
           Read left to right: decimal value, 8-bit binary, hex, and the ASCII
           glyph when that code is a character. 65 is the capital A; 48 is the
           character 0, not the value zero.
@@ -101,28 +101,28 @@ export function EncodingPrimer() {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[28rem] table-fixed border-collapse font-mono text-[11px]">
             <thead>
-              <tr className="text-left text-zinc-500">
-                <th className="w-[18%] border-b border-white/10 py-1.5 pr-3 font-medium">
+              <tr className="text-left text-lbs-text-3">
+                <th className="w-[18%] border-b border-lbs-line py-1.5 pr-3 font-medium">
                   Decimal
                 </th>
-                <th className="w-[28%] border-b border-white/10 py-1.5 pr-3 font-medium">
+                <th className="w-[28%] border-b border-lbs-line py-1.5 pr-3 font-medium">
                   Binary
                 </th>
-                <th className="w-[18%] border-b border-white/10 py-1.5 pr-3 font-medium">
+                <th className="w-[18%] border-b border-lbs-line py-1.5 pr-3 font-medium">
                   Hex
                 </th>
-                <th className="w-[36%] border-b border-white/10 py-1.5 font-medium">
+                <th className="w-[36%] border-b border-lbs-line py-1.5 font-medium">
                   ASCII
                 </th>
               </tr>
             </thead>
-            <tbody className="text-zinc-300">
+            <tbody className="text-lbs-text-dim">
               {SAME_NUMBER.map((row) => (
                 <tr key={row.dec}>
-                  <td className="border-b border-white/5 py-1 pr-3">{row.dec}</td>
-                  <td className="border-b border-white/5 py-1 pr-3">{row.bin}</td>
-                  <td className="border-b border-white/5 py-1 pr-3">{row.hex}</td>
-                  <td className="border-b border-white/5 py-1">{row.ascii}</td>
+                  <td className="border-b border-lbs-line-faint py-1 pr-3">{row.dec}</td>
+                  <td className="border-b border-lbs-line-faint py-1 pr-3">{row.bin}</td>
+                  <td className="border-b border-lbs-line-faint py-1 pr-3">{row.hex}</td>
+                  <td className="border-b border-lbs-line-faint py-1">{row.ascii}</td>
                 </tr>
               ))}
             </tbody>
@@ -133,7 +133,7 @@ export function EncodingPrimer() {
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
         <Sheet>
           <Head icon={Binary} title="Binary · powers of two" />
-          <p className="mb-3 text-xs leading-5 text-zinc-500">
+          <p className="mb-3 text-xs leading-5 text-lbs-text-3">
             Each lamp is worth twice the one on its right. 13 is 8 + 4 + 1, so
             the 4-bit reading is 1101. Spaces in a glyph are only grouping;
             they do not change the value.
@@ -141,26 +141,26 @@ export function EncodingPrimer() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[16rem] table-fixed border-collapse font-mono text-[11px]">
               <thead>
-                <tr className="text-left text-zinc-500">
-                  <th className="w-[22%] border-b border-white/10 py-1.5 pr-3 font-medium">
+                <tr className="text-left text-lbs-text-3">
+                  <th className="w-[22%] border-b border-lbs-line py-1.5 pr-3 font-medium">
                     Bit
                   </th>
-                  <th className="w-[28%] border-b border-white/10 py-1.5 pr-3 font-medium">
+                  <th className="w-[28%] border-b border-lbs-line py-1.5 pr-3 font-medium">
                     Value
                   </th>
-                  <th className="w-[50%] border-b border-white/10 py-1.5 font-medium">
+                  <th className="w-[50%] border-b border-lbs-line py-1.5 font-medium">
                     8-bit mask
                   </th>
                 </tr>
               </thead>
-              <tbody className="text-zinc-300">
+              <tbody className="text-lbs-text-dim">
                 {POWERS.map((row) => (
                   <tr key={row.bit}>
-                    <td className="border-b border-white/5 py-1 pr-3">{row.bit}</td>
-                    <td className="border-b border-white/5 py-1 pr-3">
+                    <td className="border-b border-lbs-line-faint py-1 pr-3">{row.bit}</td>
+                    <td className="border-b border-lbs-line-faint py-1 pr-3">
                       {row.weight}
                     </td>
-                    <td className="border-b border-white/5 py-1">{row.lamps}</td>
+                    <td className="border-b border-lbs-line-faint py-1">{row.lamps}</td>
                   </tr>
                 ))}
               </tbody>
@@ -170,7 +170,7 @@ export function EncodingPrimer() {
 
         <Sheet>
           <Head icon={Hash} title="Hex · one nibble is one digit" />
-          <p className="mb-3 text-xs leading-5 text-zinc-500">
+          <p className="mb-3 text-xs leading-5 text-lbs-text-3">
             Four lamps make one hex digit. After 9 the glyphs are A = 10, B =
             11, C = 12, D = 13, E = 14, F = 15. Prefix 0x marks hex, not
             binary.
@@ -178,28 +178,28 @@ export function EncodingPrimer() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[16rem] table-fixed border-collapse font-mono text-[11px]">
               <thead>
-                <tr className="text-left text-zinc-500">
-                  <th className="w-[28%] border-b border-white/10 py-1.5 pr-3 font-medium">
+                <tr className="text-left text-lbs-text-3">
+                  <th className="w-[28%] border-b border-lbs-line py-1.5 pr-3 font-medium">
                     Dec
                   </th>
-                  <th className="w-[40%] border-b border-white/10 py-1.5 pr-3 font-medium">
+                  <th className="w-[40%] border-b border-lbs-line py-1.5 pr-3 font-medium">
                     Binary
                   </th>
-                  <th className="w-[32%] border-b border-white/10 py-1.5 font-medium">
+                  <th className="w-[32%] border-b border-lbs-line py-1.5 font-medium">
                     Hex
                   </th>
                 </tr>
               </thead>
-              <tbody className="text-zinc-300">
+              <tbody className="text-lbs-text-dim">
                 {NIBBLES.map((row) => (
                   <tr key={row.decimal}>
-                    <td className="border-b border-white/5 py-1 pr-3">
+                    <td className="border-b border-lbs-line-faint py-1 pr-3">
                       {row.decimal}
                     </td>
-                    <td className="border-b border-white/5 py-1 pr-3">
+                    <td className="border-b border-lbs-line-faint py-1 pr-3">
                       {row.binary}
                     </td>
-                    <td className="border-b border-white/5 py-1">{row.hex}</td>
+                    <td className="border-b border-lbs-line-faint py-1">{row.hex}</td>
                   </tr>
                 ))}
               </tbody>
@@ -210,33 +210,33 @@ export function EncodingPrimer() {
 
       <Sheet className="mt-4">
         <Head icon={Hash} title="Letter lamps · A = 00001, not ASCII" />
-        <p className="mb-3 text-xs leading-5 text-zinc-500">
+        <p className="mb-3 text-xs leading-5 text-lbs-text-3">
           Some prompts hide a letter in five bits. A is 1, B is 2, up to Z is
           26. That is not ASCII. ASCII A is 65 / 0x41 / 0100 0001.
         </p>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[16rem] table-fixed border-collapse font-mono text-[11px]">
             <thead>
-              <tr className="text-left text-zinc-500">
-                <th className="w-[28%] border-b border-white/10 py-1.5 pr-3 font-medium">
+              <tr className="text-left text-lbs-text-3">
+                <th className="w-[28%] border-b border-lbs-line py-1.5 pr-3 font-medium">
                   Letter
                 </th>
-                <th className="w-[22%] border-b border-white/10 py-1.5 pr-3 font-medium">
+                <th className="w-[22%] border-b border-lbs-line py-1.5 pr-3 font-medium">
                   N
                 </th>
-                <th className="w-[50%] border-b border-white/10 py-1.5 font-medium">
+                <th className="w-[50%] border-b border-lbs-line py-1.5 font-medium">
                   5-bit
                 </th>
               </tr>
             </thead>
-            <tbody className="text-zinc-300">
+            <tbody className="text-lbs-text-dim">
               {LETTER_CODES.map((row) => (
                 <tr key={row.letter}>
-                  <td className="border-b border-white/5 py-1 pr-3">
+                  <td className="border-b border-lbs-line-faint py-1 pr-3">
                     {row.letter}
                   </td>
-                  <td className="border-b border-white/5 py-1 pr-3">{row.n}</td>
-                  <td className="border-b border-white/5 py-1">{row.lamps}</td>
+                  <td className="border-b border-lbs-line-faint py-1 pr-3">{row.n}</td>
+                  <td className="border-b border-lbs-line-faint py-1">{row.lamps}</td>
                 </tr>
               ))}
             </tbody>
@@ -246,35 +246,35 @@ export function EncodingPrimer() {
 
       <Sheet className="mt-4">
         <Head icon={Type} title="ASCII · character = code" />
-        <p className="mb-3 text-xs leading-5 text-zinc-500">
+        <p className="mb-3 text-xs leading-5 text-lbs-text-3">
           A capital is 65. Add 32 and it becomes lowercase. Digit characters
           start at 48, which is the glyph 0.
         </p>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[22rem] table-fixed border-collapse font-mono text-[11px]">
             <thead>
-              <tr className="text-left text-zinc-500">
-                <th className="w-[34%] border-b border-white/10 py-1.5 pr-3 font-medium">
+              <tr className="text-left text-lbs-text-3">
+                <th className="w-[34%] border-b border-lbs-line py-1.5 pr-3 font-medium">
                   Glyph
                 </th>
-                <th className="w-[33%] border-b border-white/10 py-1.5 pr-3 font-medium">
+                <th className="w-[33%] border-b border-lbs-line py-1.5 pr-3 font-medium">
                   Decimal
                 </th>
-                <th className="w-[33%] border-b border-white/10 py-1.5 font-medium">
+                <th className="w-[33%] border-b border-lbs-line py-1.5 font-medium">
                   Hex
                 </th>
               </tr>
             </thead>
-            <tbody className="text-zinc-300">
+            <tbody className="text-lbs-text-dim">
               {ASCII_ROWS.map((row) => (
                 <tr key={row.glyph}>
-                  <td className="border-b border-white/5 py-1 pr-3">
+                  <td className="border-b border-lbs-line-faint py-1 pr-3">
                     {row.glyph}
                   </td>
-                  <td className="border-b border-white/5 py-1 pr-3">
+                  <td className="border-b border-lbs-line-faint py-1 pr-3">
                     {row.decimal}
                   </td>
-                  <td className="border-b border-white/5 py-1">{row.hex}</td>
+                  <td className="border-b border-lbs-line-faint py-1">{row.hex}</td>
                 </tr>
               ))}
             </tbody>

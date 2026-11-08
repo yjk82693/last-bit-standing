@@ -36,14 +36,14 @@ export function BinaryBackdrop() {
         className="pointer-events-none fixed inset-0 bg-cover bg-center"
         style={{ backgroundImage: `url(${SIGN_IN_BACKGROUND_IMAGE})` }}
       >
-        <div className="absolute inset-0 bg-zinc-950/70" />
+        <div className="absolute inset-0 bg-lbs-backdrop-veil" />
       </div>
     );
   }
 
   return (
-    <div aria-hidden className="pointer-events-none fixed inset-0 overflow-hidden bg-zinc-950">
-      <div className="absolute inset-0 flex justify-between px-2 font-mono text-sm leading-6 text-amber-200">
+    <div aria-hidden className="pointer-events-none fixed inset-0 overflow-hidden bg-lbs-backdrop">
+      <div className="absolute inset-0 flex justify-between px-2 font-mono text-sm leading-6 text-lbs-backdrop-ink">
         {columns.map((c, i) => (
           <pre
             key={i}
@@ -55,9 +55,9 @@ export function BinaryBackdrop() {
         ))}
       </div>
       {/* darker middle keeps the title and card readable, warm glow around it */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_45%_55%_at_center,rgba(9,9,11,0.85),transparent_75%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(251,191,36,0.10),transparent_65%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_45%,rgba(9,9,11,0.9)_95%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_45%_55%_at_center,var(--lbs-backdrop-center),transparent_75%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,var(--lbs-backdrop-glow),transparent_65%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_45%,var(--lbs-backdrop-edge)_95%)]" />
     </div>
   );
 }

@@ -10,9 +10,9 @@ export function AuthShell({ children }: { children: React.ReactNode }) {
 
   if (!AUTH_CLIENT_ID) {
     return (
-      <div className="mx-auto max-w-xl px-4 py-16 text-zinc-300">
-        <p className="font-medium text-red-300">Sign-in is not configured.</p>
-        <p className="mt-2 text-sm text-zinc-400">
+      <div className="mx-auto max-w-xl px-4 py-16 text-lbs-text-dim">
+        <p className="font-medium text-lbs-bad">Sign-in is not configured.</p>
+        <p className="mt-2 text-sm text-lbs-text-2">
           Set <code className="font-mono">NEXT_PUBLIC_SPACETIMEAUTH_CLIENT_ID</code> in{" "}
           <code className="font-mono">.env.local</code> and restart the dev server.
         </p>
