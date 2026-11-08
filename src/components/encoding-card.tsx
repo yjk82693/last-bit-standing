@@ -34,10 +34,10 @@ export function EncodingCard({
   onClick?: () => void;
 }) {
   const caption = cardCaption(card, difficulty);
-  // The stamp sits beside the button, not inside it, so a dimmed (disabled)
-  // card does not dim its stamp: the result stays fully readable.
+  // The stamp sits under the card button, not inside it: a dimmed (disabled)
+  // card does not dim its stamp, and the stamp never covers the card's value.
   return (
-    <div className="relative shrink-0">
+    <div className="flex shrink-0 flex-col items-center gap-1.5">
       <button
         type="button"
         onClick={onClick}
@@ -109,7 +109,7 @@ export function EncodingCard({
       {stamped ? (
         <div
           className={cn(
-            "pointer-events-none absolute inset-x-3 top-1/2 z-20 -translate-y-1/2 rotate-[-12deg] rounded border-2 bg-lbs-stamp py-1 text-center font-mono text-[11px] font-bold tracking-[0.2em] opacity-100",
+            "pointer-events-none w-full rounded border-2 bg-lbs-stamp py-0.5 text-center font-mono text-xs font-bold tracking-[0.2em] opacity-100",
             stamped === "exact" && "border-lbs-correct text-lbs-correct-ink",
             stamped === "close" && "border-lbs-close text-lbs-close-ink",
             stamped === "miss" && "border-lbs-wrong text-lbs-wrong-ink",
