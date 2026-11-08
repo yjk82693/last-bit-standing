@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
-import { GameTable } from "@/components/game-table";
+import { GameTable, type RunStats } from "@/components/game-table";
 import { TitleScreen } from "@/components/title-screen";
 import { aiDelayMs, BOTS } from "@/lib/bots";
 import {
@@ -38,6 +38,13 @@ export function GameApp({ playerName = "Operator" }: { playerName?: string }) {
   const [helpOpen, setHelpOpen] = useState(false);
   const [clockFreeze, setClockFreeze] = useState<number | null>(null);
   const saved = useRef(false);
+  // One record per resolved round of this run, read from state the engine
+  // already sets (lastAnswerCorrect, answeredAt, promptStartedAt). Display
+  // only: the end screen summary.
+  const [roundLog, setRoundLog] = useState<RoundRecord[]>([]);
+  // Best earlier score for this player name in this browser's saved scores,
+  // read before this run is written. null = no earlier score.
+  const [previousBest, setPreviousBest] = useState<number | null>(null);
   const helpOpenRef = useRef(false);
   const hintOpenRef = useRef(false);
   const clockFreezeRef = useRef<number | null>(null);
@@ -200,6 +207,24 @@ export function GameApp({ playerName = "Operator" }: { playerName?: string }) {
   }, [state?.phase, state?.round, state?.lastAnswerCorrect]);
 
   useEffect(() => {
+    if (state?.phase !== "resolving" && state?.phase !== "gameover") return;
+    const record: RoundRecord = {
+      round: state.round,
+      correct: state.lastAnswerCorrect,
+      ms:
+        state.answeredAt != null
+          ? Math.max(0, state.answeredAt - state.promptStartedAt)
+          : null,
+    };
+    // Keyed by round, so running twice for the same round changes nothing.
+    window.setTimeout(() => {
+      setRoundLog((log) =>
+        log.some((item) => item.round === record.round) ? log : [...log, record],
+      );
+    }, 0);
+  }, [state]);
+
+  useEffect(() => {
     if (state?.phase !== "gameover" || saved.current) return;
     saved.current = true;
     const you = youPlayer(state);
@@ -214,7 +239,12 @@ export function GameApp({ playerName = "Operator" }: { playerName?: string }) {
       falseCalls: state.falseCalls,
       at: new Date().toISOString(),
     };
+    const earlier = readLocalScores().filter((item) => item.name === row.name);
+    const best = earlier.length
+      ? Math.max(...earlier.map((item) => item.score))
+      : null;
     const id = window.setTimeout(() => {
+      setPreviousBest(best);
       setScores(writeLocalScore(row));
     }, 0);
     void fetch("/api/scores", {
@@ -224,6 +254,30 @@ export function GameApp({ playerName = "Operator" }: { playerName?: string }) {
     });
     return () => window.clearTimeout(id);
   }, [state]);
+
+  const startMatch = () => {
+    saved.current = false;
+    helpOpenRef.current = false;
+    hintOpenRef.current = false;
+    clockFreezeRef.current = null;
+    setClockFreeze(null);
+    setHelpOpen(false);
+    setRoundLog([]);
+    setPreviousBest(null);
+    setState(createMatch(playerName, storeLabel));
+  };
+
+  const runStats: RunStats = {
+    answered: roundLog.length,
+    correct: roundLog.filter((item) => item.correct).length,
+    fastestMs: roundLog.reduce<number | null>(
+      (best, item) =>
+        item.correct && item.ms != null && (best == null || item.ms < best)
+          ? item.ms
+          : best,
+      null,
+    ),
+  };
 
   if (!state) {
     return (
@@ -236,15 +290,7 @@ export function GameApp({ playerName = "Operator" }: { playerName?: string }) {
             setScores(clearLocalScores());
             void fetch("/api/scores", { method: "DELETE" });
           }}
-          onStart={() => {
-            saved.current = false;
-            helpOpenRef.current = false;
-            hintOpenRef.current = false;
-            clockFreezeRef.current = null;
-            setClockFreeze(null);
-            setHelpOpen(false);
-            setState(createMatch(playerName, storeLabel));
-          }}
+          onStart={startMatch}
         />
       </ThemeRoot>
     );
@@ -256,6 +302,12 @@ export function GameApp({ playerName = "Operator" }: { playerName?: string }) {
         state={state}
         now={clockFreeze ?? now}
         helpOpen={helpOpen}
+        runStats={runStats}
+        previousBest={previousBest}
+        onPlayAgain={() => {
+          stopVoice();
+          startMatch();
+        }}
         onSelect={(cardId) => {
           if (helpBlocksTable()) return;
           setState((current) => {
@@ -302,6 +354,8 @@ export function GameApp({ playerName = "Operator" }: { playerName?: string }) {
     </ThemeRoot>
   );
 }
+
+type RoundRecord = { round: number; correct: boolean; ms: number | null };
 
 // Root of the single-player theme. Re-declares page colour and text so they
 // resolve against the theme variables instead of inheriting from <body>.

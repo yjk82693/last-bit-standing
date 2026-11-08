@@ -15,6 +15,16 @@ import type { GameState } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { themeScope } from "@/lib/theme";
 
+// End-screen summary of this run, built in GameApp from per-round state.
+export type RunStats = {
+  // Rounds resolved this run.
+  answered: number;
+  // Rounds where the player's card was right.
+  correct: number;
+  // Fastest right answer (ms from prompt to play), null if none was right.
+  fastestMs: number | null;
+};
+
 // Warn this long before the clock ends that a card will be played for you.
 const AUTO_PLAY_NOTICE_MS = 10_000;
 
@@ -22,6 +32,9 @@ export function GameTable({
   state,
   now,
   helpOpen,
+  runStats,
+  previousBest = null,
+  onPlayAgain,
   onSelect,
   onPlay,
   onAccuse,
@@ -36,6 +49,9 @@ export function GameTable({
   state: GameState;
   now: number;
   helpOpen: boolean;
+  runStats?: RunStats;
+  previousBest?: number | null;
+  onPlayAgain?: () => void;
   onSelect: (cardId: string) => void;
   onPlay: () => void;
   onAccuse: (botId: string) => void;
@@ -358,8 +374,17 @@ export function GameTable({
                   : "You lost your last life. The models still hold the table."}
               </p>
               <p className="mt-1 font-mono text-lbs-accent-2">Score {state.score}</p>
+              <RunSummary
+                stats={runStats}
+                score={state.score}
+                correctCalls={state.correctCalls}
+                previousBest={previousBest}
+              />
               <div className="mt-3 flex flex-wrap gap-2">
-                <Button onClick={onQuit}>
+                {onPlayAgain ? (
+                  <Button onClick={onPlayAgain}>One more game</Button>
+                ) : null}
+                <Button variant={onPlayAgain ? "outline" : "default"} onClick={onQuit}>
                   {state.winnerId === "you" ? "Take the win" : "Try another table"}
                 </Button>
                 <MainMenuButton />
@@ -404,6 +429,52 @@ export function GameTable({
         </div>
       </section>
     </div>
+  );
+}
+
+function RunSummary({
+  stats,
+  score,
+  correctCalls,
+  previousBest,
+}: {
+  stats?: RunStats;
+  score: number;
+  correctCalls: number;
+  previousBest: number | null;
+}) {
+  const rows: { label: string; value: string }[] = [];
+  if (stats && stats.answered > 0) {
+    rows.push({
+      label: "Right answers",
+      value: `${stats.correct}/${stats.answered} (${Math.round((stats.correct / stats.answered) * 100)}%)`,
+    });
+  }
+  if (stats?.fastestMs != null) {
+    rows.push({
+      label: "Fastest right answer",
+      value: `${(stats.fastestMs / 1000).toFixed(1)}s`,
+    });
+  }
+  rows.push({ label: "Correct calls", value: String(correctCalls) });
+  if (previousBest == null) {
+    rows.push({ label: "Your best here", value: "First saved score" });
+  } else {
+    const diff = score - previousBest;
+    rows.push({
+      label: `Your best here (${previousBest})`,
+      value: diff > 0 ? `New best, +${diff}` : diff === 0 ? "Tied" : `${diff}`,
+    });
+  }
+  return (
+    <dl className="mt-3 grid gap-1.5 text-sm">
+      {rows.map((row) => (
+        <div key={row.label} className="flex items-baseline justify-between gap-3">
+          <dt className="text-lbs-text-2">{row.label}</dt>
+          <dd className="font-mono text-lbs-text-hi">{row.value}</dd>
+        </div>
+      ))}
+    </dl>
   );
 }
 
