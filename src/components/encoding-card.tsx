@@ -38,7 +38,9 @@ export function EncodingCard({
     <button
       type="button"
       onClick={onClick}
-      disabled={disabled}
+      // Display-only cards (no onClick) stay out of the Tab order.
+      disabled={disabled || !onClick}
+      data-focus-ring="inset"
       className={cn(
         "relative flex shrink-0 flex-col overflow-hidden rounded-xl border text-left shadow-[0_10px_24px_-12px_rgba(0,0,0,0.8)] transition-all",
         compact

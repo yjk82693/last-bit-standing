@@ -81,6 +81,7 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --focus-ring: var(--ring);
 }
 
 .dark {
@@ -115,6 +116,7 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  --focus-ring: var(--ring);
 }
 
 @layer base {
@@ -127,6 +129,25 @@
   html {
     @apply font-sans;
   }
+}
+
+/*
+ * Keyboard focus. One visible ring for every focusable control, drawn only for
+ * keyboard focus (:focus-visible), so mouse clicks look the same as before.
+ * Kept outside @layer so utilities such as `outline-none` cannot hide it.
+ * Change the colour in one place: --focus-ring (a theme token later).
+ */
+:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/*
+ * Cards sit in scrolling rows that clip anything drawn outside them, so their
+ * ring goes inside, with a gap that keeps it apart from the selected border.
+ */
+[data-focus-ring="inset"]:focus-visible {
+  outline-offset: -6px;
 }
 
 @keyframes lbs-shake {
