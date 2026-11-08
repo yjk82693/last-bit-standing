@@ -18,6 +18,7 @@ import type {
   PlayerState,
   PromptDef,
 } from "@/lib/types";
+import { overheatedAccuracy, SOLO_RULES } from "@/lib/rules";
 
 function shuffle<T>(items: T[]): T[] {
   const next = [...items];
@@ -500,11 +501,15 @@ export function chooseBotCard(
   hand: CardDef[],
   prompt: PromptDef,
   timerRatio: number,
+  // R3: pass the round to apply overheat. Without it the bot plays at its
+  // base accuracy (the pre-R3 behaviour).
+  round?: number,
 ): CardDef {
   if (!hand.length) {
     return answerCardFor(prompt);
   }
-  let accuracy = bot.accuracy;
+  let accuracy =
+    round == null ? bot.accuracy : overheatedAccuracy(bot.accuracy, round);
   if (prompt.category === bot.specialty) accuracy += 0.12;
   if (timerRatio < 0.38) accuracy *= 1 - bot.panic * 0.75;
   const exact = hand.filter((card) => isExactCard(card, prompt));
@@ -533,7 +538,7 @@ function enterAccuseIfReady(state: GameState, now = Date.now()): GameState {
       ...state.logs,
       line(
         "warn",
-        "Call a wrong bot to take a life. Two correct calls in a row restore 1 of yours (max 3). A correct bot — or your own wrong card — costs you a life.",
+        `Call up to ${SOLO_RULES.callsPerRound} wrong bots to take a life each. Two correct calls in a row restore 1 of yours (max 3). A correct bot — or your own wrong card — costs you a life.`,
       ),
     ],
   };
@@ -588,7 +593,13 @@ export function playBot(
   if (player.hand.length === 0) return state;
   const remain = Math.max(0, state.deadlineAt - now);
   const total = roundTimerMs(state.round, state.prompt.difficulty);
-  const card = chooseBotCard(bot, player.hand, state.prompt, remain / total);
+  const card = chooseBotCard(
+    bot,
+    player.hand,
+    state.prompt,
+    remain / total,
+    state.round,
+  );
   if (!card) return state;
   const players = state.players.map((item) =>
     item.id === botId
@@ -603,8 +614,27 @@ export function playBot(
   return enterAccuseIfReady({
     ...state,
     players,
-    logs: [...state.logs, line("neutral", `${bot.name} plays ${card.glyph}.`)],
+    logs: [
+      ...state.logs,
+      line(
+        "neutral",
+        // R1: while the player has not played, the log must not name the card.
+        botCardsHidden(state)
+          ? `${bot.name} puts a card down, face down.`
+          : `${bot.name} plays ${card.glyph}.`,
+      ),
+    ],
   });
+}
+
+/**
+ * R1: bot cards on the felt stay face down until the player has played
+ * (by hand or by the timeout auto-play). The play itself is not hidden.
+ */
+export function botCardsHidden(state: GameState): boolean {
+  if (!SOLO_RULES.hideBotCardsUntilPlay) return false;
+  if (state.phase !== "dealing" && state.phase !== "prompting") return false;
+  return !youPlayer(state).played;
 }
 
 export function timeoutHuman(state: GameState): GameState {
@@ -623,13 +653,22 @@ export function timeoutHuman(state: GameState): GameState {
   };
 }
 
+/** R2: calls the player can still make this round. */
+export function callsLeft(state: GameState): number {
+  return Math.max(0, SOLO_RULES.callsPerRound - state.accusedIds.length);
+}
+
 export function toggleAccuse(state: GameState, botId: string): GameState {
   if (state.phase !== "accusing") return state;
   const target = state.players.find((player) => player.id === botId);
   if (!target || target.isHuman || target.eliminated || !target.played) {
     return state;
   }
-  const accusedIds = state.accusedIds.includes(botId)
+  const already = state.accusedIds.includes(botId);
+  // R2: a new call needs a call left. Taking a call back before the lock is
+  // always allowed and frees it again.
+  if (!already && callsLeft(state) <= 0) return state;
+  const accusedIds = already
     ? state.accusedIds.filter((id) => id !== botId)
     : [...state.accusedIds, botId];
   return { ...state, accusedIds };

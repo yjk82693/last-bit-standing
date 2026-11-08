@@ -49,11 +49,12 @@ export function TitleScreen({
         </h1>
         <p className="max-w-2xl text-pretty text-base leading-7 text-lbs-text-dim sm:text-lg">
           Six players. Seven encoding cards. Each round a prompt hits the table
-          and you answer with binary, hex, or ASCII. The clock is a score
-          multiplier, not a life drain. Call a wrong bot to take a life. Two
-          correct calls in a row restore one of yours. Play the wrong card, or
-          call a right bot, and you lose one. You win with at least one life
-          after every bot is out.
+          and you answer with binary, hex, or ASCII. Bot cards stay face down
+          until you play. Then call up to two wrong bots to take a life each.
+          Two correct calls in a row restore one of yours. Play the wrong card,
+          or call a right bot, and you lose one. From round 6 the bots
+          overheat and slip. You win with at least one life after every bot is
+          out.
         </p>
       </header>
 
@@ -225,16 +226,20 @@ function HowToPlay() {
           </li>
           <li className="flex gap-2">
             <ShieldAlert className="mt-0.5 size-4 shrink-0 text-lbs-accent" />
-            After the plays, tap any bot whose answer is wrong. That bot loses 1
-            of 3 lives. Two correct calls in a row restore 1 of your lives, up
-            to 3. Tap a bot who was right, or play the wrong card yourself, and
+            Bot cards stay face down until you play (if the clock runs out,
+            your selected card, or the leftmost one, is played for you). Then
+            the cards turn over and you get two calls per round: tap a bot
+            whose answer is wrong and it loses 1 of 3 lives. A call on a right
+            bot also uses a call. Two correct calls in a row restore 1 of your
+            lives, up to 3. Tap a bot who was right, or play the wrong card yourself, and
             you lose a life. Lives carry into the next round. A bot at 0 stays
             on the felt, darkened, with their last play showing.
           </li>
           <li>
             Everyone starts with 3 lives. You win if you still have at least 1
-            life and every bot has lost all 3. The clock no longer costs a life
-            — it only changes how many points a correct card is worth.
+            life and every bot has lost all 3. From round 6 the bots overheat:
+            each round their accuracy drops by 0.05, down to 0.3. A card played
+            when the clock runs out is judged like any play.
           </li>
         </ul>
       </DialogContent>
