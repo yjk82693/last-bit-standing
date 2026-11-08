@@ -167,7 +167,7 @@ export function MatchTable({
                   {isMe && <Badge variant="secondary">you</Badge>}
                   {s.eliminated && <Badge variant="outline">out</Badge>}
                 </div>
-                <HealthPips health={s.health} />
+                <HealthPips health={s.health} variant="bits" />
               </div>
 
               <div className="flex min-h-[132px] items-center gap-3">

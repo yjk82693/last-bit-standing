@@ -15,8 +15,8 @@ export function HealthPips({
 }: {
   health: number;
   className?: string;
-  // "bits" is the single-player theme: lives read as 1 1 1 -> 1 1 0, so they
-  // do not depend on colour. Multiplayer keeps the hearts.
+  // "bits" is theme B: lives read as 1 1 1 -> 1 1 0, so they do not depend
+  // on colour. Every table uses it; "hearts" stays as the default variant.
   variant?: "hearts" | "bits";
   size?: "seat" | "hud";
 }) {
