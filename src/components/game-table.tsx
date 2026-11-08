@@ -136,7 +136,7 @@ export function GameTable({
           </div>
           <div className="flex items-center gap-2">
             <span className="text-xs text-lbs-text-2">Your lives</span>
-            <HealthPips health={you.health} />
+            <HealthPips health={you.health} variant="bits" size="hud" />
           </div>
           <Button variant="ghost" size="sm" onClick={onQuit}>
             Leave table

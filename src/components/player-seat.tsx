@@ -10,9 +10,15 @@ import type { BotDef, Difficulty, MatchQuality, PlayerState } from "@/lib/types"
 export function HealthPips({
   health,
   className,
+  variant = "hearts",
+  size = "seat",
 }: {
   health: number;
   className?: string;
+  // "bits" is the single-player theme: lives read as 1 1 1 -> 1 1 0, so they
+  // do not depend on colour. Multiplayer keeps the hearts.
+  variant?: "hearts" | "bits";
+  size?: "seat" | "hud";
 }) {
   const previous = useRef(health);
   const [breaking, setBreaking] = useState<number[]>([]);
@@ -30,6 +36,39 @@ export function HealthPips({
     }
     previous.current = health;
   }, [health]);
+
+  if (variant === "bits") {
+    return (
+      <div
+        role="img"
+        className={cn(
+          "flex items-center gap-0.5 font-mono font-bold leading-none",
+          size === "hud" ? "text-[28px]" : "text-[20px]",
+          className,
+        )}
+        aria-label={`${health} of ${MAX_HEALTH} lives`}
+      >
+        {Array.from({ length: MAX_HEALTH }).map((_, index) => {
+          const filled = index < health;
+          const cracked = breaking.includes(index);
+          return (
+            <span
+              key={index}
+              aria-hidden
+              className={cn(
+                "inline-block w-[0.62em] text-center",
+                cracked && "lbs-heart-break text-lbs-life-break",
+                filled && !cracked && "text-lbs-life",
+                !filled && !cracked && "text-lbs-life-empty",
+              )}
+            >
+              {filled ? "1" : "0"}
+            </span>
+          );
+        })}
+      </div>
+    );
+  }
 
   return (
     <div
@@ -133,7 +172,7 @@ export function PlayerSeat({
             {player.eliminated ? "Blocked" : (bot?.title ?? "Human operator")}
           </p>
         </div>
-        <HealthPips health={player.health} />
+        <HealthPips health={player.health} variant="bits" />
       </div>
       {shown ? (
         <div className="relative">
