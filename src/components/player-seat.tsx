@@ -149,7 +149,9 @@ export function PlayerSeat({
         style={
           player.eliminated
             ? undefined
-            : { boxShadow: `0 0 0 1px ${bot?.accent ?? "#e7e5e4"}22` }
+            : {
+                boxShadow: `0 0 0 1px color-mix(in srgb, ${bot?.accent ?? "var(--lbs-seat-accent)"} 13%, transparent)`,
+              }
         }
       >
         <span
@@ -157,7 +159,7 @@ export function PlayerSeat({
             "size-2.5 shrink-0 rounded-full",
             player.eliminated && "grayscale",
           )}
-          style={{ background: bot?.accent ?? "#e7e5e4" }}
+          style={{ background: bot?.accent ?? "var(--lbs-seat-accent)" }}
         />
         <div className="min-w-0">
           <p

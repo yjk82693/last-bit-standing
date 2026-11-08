@@ -234,6 +234,7 @@
   --lbs-seat: color-mix(in oklab, #000 35%, transparent);
   --lbs-seat-out: color-mix(in oklab, oklch(14.1% 0.005 285.823) 80%, transparent);
   --lbs-seat-veil: color-mix(in oklab, oklch(14.1% 0.005 285.823) 55%, transparent);
+  --lbs-seat-accent: #e7e5e4;
   /* Cards */
   --lbs-card-binary: oklch(27.9% 0.041 260.031);
   --lbs-card-hex: oklch(27.7% 0.046 192.524);
@@ -320,8 +321,9 @@
 
 /*
  * Theme B "circuit-bits" (tokens/circuit-bits.json, dark mode = its primary
- * mode). Scoped to [data-lbs-theme] so only the single-player screens use it
- * (see src/lib/theme.ts); menus, sign-in and multiplayer keep the values above.
+ * mode). The root layout sets [data-lbs-theme] on <html>, so every screen
+ * uses these values (see src/lib/theme.ts). The values above stay as the
+ * fallback for anything rendered without the attribute.
  */
 [data-lbs-theme="circuit-bits"] {
   /* shadcn roles */
@@ -424,6 +426,17 @@
   --lbs-card-ink-2: #a9b8d4;
   --lbs-card-back: #16213a;
   --lbs-card-back-line: #2b3e66;
+  --lbs-card-shadow: color-mix(in srgb, #000 80%, transparent);
+  /* Fallback seat accent when a seat has no bot (bot accents are bot_* tokens) */
+  --lbs-seat-accent: #9fb0cc;
+
+  /* Sign-in backdrop: bg, accent glyphs, accent_tint glow */
+  --lbs-backdrop: #070b14;
+  --lbs-backdrop-veil: color-mix(in srgb, #070b14 70%, transparent);
+  --lbs-backdrop-ink: #3de0ff;
+  --lbs-backdrop-center: color-mix(in srgb, #070b14 85%, transparent);
+  --lbs-backdrop-glow: color-mix(in srgb, #3de0ff 10%, transparent);
+  --lbs-backdrop-edge: color-mix(in srgb, #050a16 90%, transparent);
 
   /* Result stamps: correct, close, wrong, called */
   --lbs-correct: #46f0a0;
