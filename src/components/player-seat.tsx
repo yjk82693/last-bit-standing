@@ -204,7 +204,10 @@ export function PlayerSeat({
         </p>
       ) : null}
       {missed ? (
-        <p className="font-mono text-[10px] font-semibold tracking-[0.14em] text-warning">
+        <p
+          className="font-mono text-[10px] font-semibold tracking-[0.14em] text-warning"
+          title="Wrong card, not called"
+        >
           MISSED<span className="sr-only">: wrong card, not called</span>
         </p>
       ) : null}
@@ -242,7 +245,7 @@ export function PlayerSeat({
         </div>
       )}
       {botWrong && bot ? (
-        <p className="w-full text-pretty text-center text-[11px] italic leading-[14px] text-lbs-text-2">
+        <p className="w-full text-pretty text-center text-xs italic leading-4 text-lbs-text-2">
           <span className="sr-only">{bot.name} says: </span>
           &ldquo;{bot.blurb}&rdquo;
         </p>
