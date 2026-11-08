@@ -10,6 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { themeScope } from "@/lib/theme";
 
 const ASCII_ROWS = [
   {
@@ -32,7 +33,7 @@ const ASCII_ROWS = [
 
 function CellHead({ children }: { children: string }) {
   return (
-    <th className="border-b border-white/15 px-2 py-2 text-left text-[10px] font-medium tracking-[0.16em] text-amber-200/70">
+    <th className="border-b border-lbs-line-strong px-2 py-2 text-left text-[10px] font-medium tracking-[0.16em] text-lbs-accent-2/70">
       {children}
     </th>
   );
@@ -47,7 +48,7 @@ function Cell({
 }) {
   return (
     <td
-      className={`border-b border-white/10 px-2 py-2 text-sm text-zinc-200 ${mono ? "font-mono tabular-nums" : ""}`}
+      className={`border-b border-lbs-line px-2 py-2 text-sm text-lbs-text-soft ${mono ? "font-mono tabular-nums" : ""}`}
     >
       {children}
     </td>
@@ -71,34 +72,35 @@ export function EncodingHelp({
       }}
     >
       <DialogContent
+        {...themeScope}
         showCloseButton={false}
-        overlayClassName="bg-black/75 supports-backdrop-filter:backdrop-blur-sm"
+        overlayClassName="bg-lbs-scrim supports-backdrop-filter:backdrop-blur-sm"
         onPointerDownOutside={(event) => event.preventDefault()}
         onInteractOutside={(event) => event.preventDefault()}
-        className="flex max-h-[min(90vh,760px)] w-full max-w-[calc(100%-1.5rem)] flex-col gap-0 overflow-hidden bg-[#10151c] p-0 text-zinc-100 ring-amber-200/20 sm:max-w-3xl"
+        className="flex max-h-[min(90vh,760px)] w-full max-w-[calc(100%-1.5rem)] flex-col gap-0 overflow-hidden bg-lbs-dialog p-0 text-lbs-text ring-lbs-accent-2/20 sm:max-w-3xl"
       >
         <DialogClose asChild>
           <Button
             type="button"
             variant="ghost"
             size="icon-sm"
-            className="absolute top-3 right-3 z-10 text-zinc-100 hover:bg-white/10 hover:text-white"
+            className="absolute top-3 right-3 z-10 text-lbs-text hover:bg-lbs-hover hover:text-lbs-text-max"
             aria-label="Close help"
           >
             <XIcon className="size-4" />
           </Button>
         </DialogClose>
-        <DialogHeader className="shrink-0 border-b border-white/10 px-5 py-4 pr-14">
-          <p className="font-mono text-[10px] tracking-[0.22em] text-amber-200/80">
+        <DialogHeader className="shrink-0 border-b border-lbs-line px-5 py-4 pr-14">
+          <p className="font-mono text-[10px] tracking-[0.22em] text-lbs-accent-2/80">
             ROUND PAUSED
             {heldSeconds != null && heldSeconds > 0
               ? ` · ${heldSeconds}s HELD`
               : ""}
           </p>
-          <DialogTitle className="mt-1 text-xl text-zinc-50">
+          <DialogTitle className="mt-1 text-xl text-lbs-text-hi">
             Encoding help
           </DialogTitle>
-          <DialogDescription className="text-sm leading-6 text-zinc-400">
+          <DialogDescription className="text-sm leading-6 text-lbs-text-2">
             Binary, hex, octal, and ASCII in everyday numbers. Close the panel
             with the X to start the clock again.
           </DialogDescription>
@@ -127,20 +129,20 @@ export function EncodingHelp({
           </div>
 
           <section className="mt-6">
-            <h3 className="text-sm font-medium text-zinc-100">
+            <h3 className="text-sm font-medium text-lbs-text">
               ASCII · the letter A and the letter a
             </h3>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400">
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-lbs-text-2">
               Computers store letters as numbers. Capital{" "}
-              <span className="text-zinc-200">A starts at 65</span>. Lowercase{" "}
-              <span className="text-zinc-200">a starts at 97</span>. That is 32
+              <span className="text-lbs-text-soft">A starts at 65</span>. Lowercase{" "}
+              <span className="text-lbs-text-soft">a starts at 97</span>. That is 32
               apart: a = A + 32. The same number can be written in binary, hex,
               or octal — it is still 65 or 97 in everyday counting.
             </p>
-            <div className="mt-3 overflow-x-auto rounded-xl border border-white/10">
+            <div className="mt-3 overflow-x-auto rounded-xl border border-lbs-line">
               <table className="w-full min-w-[40rem] border-collapse">
                 <thead>
-                  <tr className="bg-white/5">
+                  <tr className="bg-lbs-wash">
                     <CellHead>LETTER</CellHead>
                     <CellHead>WHAT IT IS</CellHead>
                     <CellHead>DECIMAL</CellHead>
@@ -166,10 +168,10 @@ export function EncodingHelp({
           </section>
 
           <section className="mt-6">
-            <h3 className="text-sm font-medium text-zinc-100">
+            <h3 className="text-sm font-medium text-lbs-text">
               How to turn those writings into a decimal number
             </h3>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400">
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-lbs-text-2">
               Decimal is ordinary counting: 10, 65, 97. Add up each digit times
               its place value.
             </p>
@@ -202,11 +204,11 @@ export function EncodingHelp({
                 ]}
               />
             </div>
-            <p className="mt-3 text-sm leading-6 text-zinc-400">
+            <p className="mt-3 text-sm leading-6 text-lbs-text-2">
               Lowercase a is the same idea: 97 = 64 + 32 + 1, so binary{" "}
-              <span className="font-mono text-zinc-200">0110 0001</span>, hex{" "}
-              <span className="font-mono text-zinc-200">0x61</span>, octal{" "}
-              <span className="font-mono text-zinc-200">141</span>.
+              <span className="font-mono text-lbs-text-soft">0110 0001</span>, hex{" "}
+              <span className="font-mono text-lbs-text-soft">0x61</span>, octal{" "}
+              <span className="font-mono text-lbs-text-soft">141</span>.
             </p>
           </section>
         </div>
@@ -227,13 +229,13 @@ function IntroCard({
   example: string;
 }) {
   return (
-    <article className="rounded-xl border border-white/10 bg-black/30 p-3">
-      <p className="font-mono text-[10px] tracking-[0.18em] text-amber-200/70">
+    <article className="rounded-xl border border-lbs-line bg-lbs-well p-3">
+      <p className="font-mono text-[10px] tracking-[0.18em] text-lbs-accent-2/70">
         {kicker}
       </p>
-      <h3 className="mt-1 text-sm font-medium text-zinc-50">{title}</h3>
-      <p className="mt-2 text-sm leading-5 text-zinc-400">{body}</p>
-      <p className="mt-3 font-mono text-xs text-amber-100/90">{example}</p>
+      <h3 className="mt-1 text-sm font-medium text-lbs-text-hi">{title}</h3>
+      <p className="mt-2 text-sm leading-5 text-lbs-text-2">{body}</p>
+      <p className="mt-3 font-mono text-xs text-lbs-accent-3/90">{example}</p>
     </article>
   );
 }
@@ -248,10 +250,10 @@ function ConvertCard({
   steps: string[];
 }) {
   return (
-    <article className="rounded-xl border border-white/10 bg-black/30 p-3">
-      <h4 className="text-sm font-medium text-zinc-50">{title}</h4>
-      <p className="mt-1 font-mono text-xs text-amber-100/90">{places}</p>
-      <ol className="mt-2 grid gap-1.5 text-sm leading-5 text-zinc-400">
+    <article className="rounded-xl border border-lbs-line bg-lbs-well p-3">
+      <h4 className="text-sm font-medium text-lbs-text-hi">{title}</h4>
+      <p className="mt-1 font-mono text-xs text-lbs-accent-3/90">{places}</p>
+      <ol className="mt-2 grid gap-1.5 text-sm leading-5 text-lbs-text-2">
         {steps.map((step) => (
           <li key={step}>{step}</li>
         ))}

@@ -17,7 +17,7 @@ export function SoloPage() {
 }
 
 function Loading() {
-  return <p className="mx-auto max-w-4xl px-4 py-10 text-zinc-500">Loading...</p>;
+  return <p className="mx-auto max-w-4xl px-4 py-10 text-lbs-text-3">Loading...</p>;
 }
 
 function Solo() {

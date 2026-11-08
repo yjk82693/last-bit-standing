@@ -16,13 +16,13 @@ export default function ErrorPage({
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-4 px-6 text-center">
-      <p className="font-mono text-xs tracking-[0.24em] text-amber-200/80">
+      <p className="font-mono text-xs tracking-[0.24em] text-lbs-accent-2/80">
         TABLE FAULT
       </p>
-      <h1 className="text-2xl font-semibold text-zinc-50">
+      <h1 className="text-2xl font-semibold text-lbs-text-hi">
         The encoding table hiccuped.
       </h1>
-      <p className="max-w-md text-sm text-zinc-400">
+      <p className="max-w-md text-sm text-lbs-text-2">
         {error.message || "An unexpected error dropped the cards."}
       </p>
       <div className="flex flex-wrap justify-center gap-2">

@@ -10,9 +10,15 @@ import type { BotDef, Difficulty, MatchQuality, PlayerState } from "@/lib/types"
 export function HealthPips({
   health,
   className,
+  variant = "hearts",
+  size = "seat",
 }: {
   health: number;
   className?: string;
+  // "bits" is the single-player theme: lives read as 1 1 1 -> 1 1 0, so they
+  // do not depend on colour. Multiplayer keeps the hearts.
+  variant?: "hearts" | "bits";
+  size?: "seat" | "hud";
 }) {
   const previous = useRef(health);
   const [breaking, setBreaking] = useState<number[]>([]);
@@ -31,6 +37,39 @@ export function HealthPips({
     previous.current = health;
   }, [health]);
 
+  if (variant === "bits") {
+    return (
+      <div
+        role="img"
+        className={cn(
+          "flex items-center gap-0.5 font-mono font-bold leading-none",
+          size === "hud" ? "text-[28px]" : "text-[20px]",
+          className,
+        )}
+        aria-label={`${health} of ${MAX_HEALTH} lives`}
+      >
+        {Array.from({ length: MAX_HEALTH }).map((_, index) => {
+          const filled = index < health;
+          const cracked = breaking.includes(index);
+          return (
+            <span
+              key={index}
+              aria-hidden
+              className={cn(
+                "inline-block w-[0.62em] text-center",
+                cracked && "lbs-heart-break text-lbs-life-break",
+                filled && !cracked && "text-lbs-life",
+                !filled && !cracked && "text-lbs-life-empty",
+              )}
+            >
+              {filled ? "1" : "0"}
+            </span>
+          );
+        })}
+      </div>
+    );
+  }
+
   return (
     <div
       className={cn("flex items-center gap-0.5", className)}
@@ -45,9 +84,9 @@ export function HealthPips({
             key={index}
             className={cn(
               "size-3.5",
-              cracked && "lbs-heart-break text-rose-300",
-              filled && !cracked && "fill-rose-400 text-rose-400",
-              !filled && !cracked && "text-zinc-600",
+              cracked && "lbs-heart-break text-lbs-life-break",
+              filled && !cracked && "fill-lbs-life text-lbs-life",
+              !filled && !cracked && "text-lbs-life-empty",
             )}
           />
         );
@@ -104,8 +143,8 @@ export function PlayerSeat({
         className={cn(
           "flex w-full min-w-0 items-center gap-1 rounded-full border px-2 py-1 backdrop-blur-sm sm:px-2.5",
           player.eliminated
-            ? "border-white/5 bg-zinc-950/80"
-            : "border-white/10 bg-black/35",
+            ? "border-lbs-line-faint bg-lbs-seat-out"
+            : "border-lbs-line bg-lbs-seat",
         )}
         style={
           player.eliminated
@@ -124,16 +163,16 @@ export function PlayerSeat({
           <p
             className={cn(
               "truncate font-medium leading-none",
-              player.eliminated ? "text-zinc-500" : "text-zinc-100",
+              player.eliminated ? "text-lbs-text-3" : "text-lbs-text",
             )}
           >
             {player.name}
           </p>
-          <p className="truncate text-[10px] text-zinc-500">
+          <p className="truncate text-[10px] text-lbs-text-3">
             {player.eliminated ? "Blocked" : (bot?.title ?? "Human operator")}
           </p>
         </div>
-        <HealthPips health={player.health} />
+        <HealthPips health={player.health} variant="bits" />
       </div>
       {shown ? (
         <div className="relative">
@@ -148,18 +187,18 @@ export function PlayerSeat({
             />
           </div>
           {player.eliminated ? (
-            <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-between rounded-xl bg-zinc-950/55 ring-1 ring-white/10">
-              <span className="mt-2 rounded border border-zinc-500/50 bg-black/40 px-2 py-0.5 font-mono text-[10px] tracking-[0.22em] text-zinc-300">
+            <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-between rounded-xl bg-lbs-seat-veil ring-1 ring-lbs-line">
+              <span className="mt-2 rounded border border-lbs-line-muted bg-lbs-well-deep px-2 py-0.5 font-mono text-[10px] tracking-[0.22em] text-lbs-text-dim">
                 OUT
               </span>
-              <span className="mb-2 font-mono text-[9px] tracking-[0.16em] text-zinc-400">
+              <span className="mb-2 font-mono text-[9px] tracking-[0.16em] text-lbs-text-2">
                 LAST PLAY
               </span>
             </div>
           ) : null}
         </div>
       ) : (
-        <div className="flex h-[132px] w-[90px] items-center justify-center rounded-xl border border-dashed border-white/15 bg-black/20 font-mono text-[10px] tracking-[0.2em] text-zinc-500 sm:h-[148px] sm:w-[102px] lg:h-[160px] lg:w-[110px]">
+        <div className="flex h-[132px] w-[90px] items-center justify-center rounded-xl border border-dashed border-lbs-card-back-line bg-lbs-card-back font-mono text-[10px] tracking-[0.2em] text-lbs-text-3 sm:h-[148px] sm:w-[102px] lg:h-[160px] lg:w-[110px]">
           WAITING
         </div>
       )}

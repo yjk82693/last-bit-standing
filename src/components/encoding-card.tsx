@@ -38,34 +38,43 @@ export function EncodingCard({
     <button
       type="button"
       onClick={onClick}
-      disabled={disabled}
+      // Display-only cards (no onClick) stay out of the Tab order.
+      disabled={disabled || !onClick}
+      data-focus-ring="inset"
       className={cn(
-        "relative flex shrink-0 flex-col overflow-hidden rounded-xl border text-left shadow-[0_10px_24px_-12px_rgba(0,0,0,0.8)] transition-all",
+        "relative flex shrink-0 flex-col overflow-hidden rounded-xl border text-left shadow-[0_10px_24px_-12px_var(--lbs-card-shadow)] transition-all",
         compact
           ? "h-[132px] w-[90px] p-2 sm:h-[148px] sm:w-[102px] lg:h-[160px] lg:w-[110px]"
           : "h-[236px] w-[164px] p-3",
         (card.encoding ?? "binary") === "binary" &&
-          "border-sky-400/30 bg-linear-to-b from-slate-800 to-slate-950",
+          "border-lbs-card-edge-binary bg-linear-to-b from-lbs-card-binary to-lbs-card-base",
         card.encoding === "hex" &&
-          "border-teal-400/30 bg-linear-to-b from-teal-950 to-slate-950",
+          "border-lbs-card-edge-hex bg-linear-to-b from-lbs-card-hex to-lbs-card-base",
         card.encoding === "ascii" &&
-          "border-fuchsia-400/30 bg-linear-to-b from-fuchsia-950 to-slate-950",
+          "border-lbs-card-edge-ascii bg-linear-to-b from-lbs-card-ascii to-lbs-card-base",
         selected &&
           !compact &&
-          "z-10 border-amber-300 ring-2 ring-inset ring-amber-300",
+          "z-10 border-lbs-card-selected ring-2 ring-inset ring-lbs-card-selected",
         selected &&
           compact &&
-          "border-amber-300 ring-2 ring-inset ring-amber-300",
+          "border-lbs-card-selected ring-2 ring-inset ring-lbs-card-selected",
         disabled && !selected && "opacity-60",
       )}
     >
-      <div className="flex items-center justify-between gap-2 font-mono text-[10px] tracking-[0.18em] text-amber-200/80">
+      <div
+        className={cn(
+          "flex items-center justify-between gap-2 font-mono text-[10px] tracking-[0.18em]",
+          (card.encoding ?? "binary") === "binary" && "text-lbs-card-label-binary",
+          card.encoding === "hex" && "text-lbs-card-label-hex",
+          card.encoding === "ascii" && "text-lbs-card-label-ascii",
+        )}
+      >
         <span>{encodingLabel[card.encoding] ?? "CARD"}</span>
-        <span className="text-amber-100/70">{rarityPips[card.rarity]}</span>
+        <span className="text-lbs-card-ink-2/70">{rarityPips[card.rarity]}</span>
       </div>
       <div
         className={cn(
-          "mt-2 font-mono leading-none text-amber-50",
+          "mt-2 font-mono leading-none text-lbs-card-ink",
           compact ? "text-lg" : "text-2xl",
           card.encoding === "ascii" && !compact && "text-5xl",
           card.encoding === "ascii" && compact && "text-3xl",
@@ -76,7 +85,7 @@ export function EncodingCard({
       <div className="mt-auto">
         <p
           className={cn(
-            "font-medium tracking-wide text-amber-100",
+            "font-medium tracking-wide text-lbs-card-ink-2",
             compact ? "text-[11px]" : "text-sm",
           )}
         >
@@ -85,7 +94,7 @@ export function EncodingCard({
         {caption ? (
           <p
             className={cn(
-              "mt-1 text-pretty text-amber-100/70",
+              "mt-1 text-pretty text-lbs-card-ink-2/70",
               compact ? "line-clamp-3 text-[9px] leading-3" : "text-xs leading-4",
             )}
           >
@@ -97,10 +106,10 @@ export function EncodingCard({
         <div
           className={cn(
             "pointer-events-none absolute inset-x-3 top-1/2 -translate-y-1/2 rotate-[-12deg] rounded border-2 py-1 text-center font-mono text-[11px] font-bold tracking-[0.2em]",
-            stamped === "exact" && "border-emerald-300 text-emerald-200",
-            stamped === "close" && "border-amber-300 text-amber-200",
-            stamped === "miss" && "border-red-400 text-red-300",
-            stamped === "accused" && "border-red-500 text-red-300",
+            stamped === "exact" && "border-lbs-correct text-lbs-correct-ink",
+            stamped === "close" && "border-lbs-close text-lbs-close-ink",
+            stamped === "miss" && "border-lbs-wrong text-lbs-wrong-ink",
+            stamped === "accused" && "border-lbs-called text-lbs-called-ink",
           )}
         >
           {stamped === "exact"

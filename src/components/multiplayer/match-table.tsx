@@ -23,10 +23,10 @@ const PHASE_LABEL: Record<string, string> = {
 };
 
 const TONE: Record<string, string> = {
-  good: "text-emerald-300",
-  bad: "text-red-300",
-  warn: "text-amber-200",
-  neutral: "text-zinc-400",
+  good: "text-success",
+  bad: "text-lbs-bad",
+  warn: "text-warning",
+  neutral: "text-lbs-text-2",
 };
 
 function useNow(intervalMs = 250) {
@@ -112,7 +112,7 @@ export function MatchTable({
     .slice(0, 14);
 
   if (!match || !mySeat) {
-    return <p className="text-zinc-400">Dealing the cards...</p>;
+    return <p className="text-lbs-text-2">Dealing the cards...</p>;
   }
 
   const prompt = PROMPTS.find((p) => p.id === match.promptId);
@@ -124,24 +124,24 @@ export function MatchTable({
 
   return (
     <div className="space-y-6">
-      <section className="space-y-3 rounded-xl border border-zinc-800 bg-zinc-900/60 p-5">
+      <section className="space-y-3 rounded-xl border border-lbs-line-solid bg-lbs-panel p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <span className="font-mono text-xs tracking-[0.2em] text-amber-200/80">
+            <span className="font-mono text-xs tracking-[0.2em] text-lbs-accent-2/80">
               {room.name.toUpperCase()} · ROUND {match.round}
             </span>
             <Badge variant="secondary">{PHASE_LABEL[match.phase] ?? match.phase}</Badge>
           </div>
           {!over && (
-            <span className={cn("font-mono text-2xl", secondsLeft <= 5 ? "text-red-300" : "text-zinc-100")}>
+            <span className={cn("font-mono text-2xl", secondsLeft <= 5 ? "text-lbs-bad" : "text-lbs-text")}>
               {secondsLeft}s
             </span>
           )}
         </div>
-        <p className="text-xl font-medium text-zinc-50 sm:text-2xl">{prompt?.text ?? "..."}</p>
+        <p className="text-xl font-medium text-lbs-text-hi sm:text-2xl">{prompt?.text ?? "..."}</p>
         {match.answer && (
-          <p className="text-sm text-zinc-400">
-            Answer: <span className="font-mono text-amber-200">{match.answer}</span>
+          <p className="text-sm text-lbs-text-2">
+            Answer: <span className="font-mono text-lbs-accent-2">{match.answer}</span>
           </p>
         )}
       </section>
@@ -156,14 +156,14 @@ export function MatchTable({
             <div
               key={s.id.toString()}
               className={cn(
-                "space-y-3 rounded-xl border bg-zinc-900/60 p-4",
-                isMe ? "border-amber-300/40" : "border-zinc-800",
+                "space-y-3 rounded-xl border bg-lbs-panel p-4",
+                isMe ? "border-lbs-accent/40" : "border-lbs-line-solid",
                 s.eliminated && "opacity-50",
               )}
             >
               <div className="flex items-center justify-between gap-2">
                 <div className="flex min-w-0 items-center gap-2">
-                  <span className="truncate font-medium text-zinc-100">{nameOf(s.identity)}</span>
+                  <span className="truncate font-medium text-lbs-text">{nameOf(s.identity)}</span>
                   {isMe && <Badge variant="secondary">you</Badge>}
                   {s.eliminated && <Badge variant="outline">out</Badge>}
                 </div>
@@ -191,12 +191,12 @@ export function MatchTable({
                     disabled={!canCall}
                   />
                 ) : (
-                  <p className="text-sm text-zinc-500">
+                  <p className="text-sm text-lbs-text-3">
                     {s.eliminated ? "Out of lives" : st?.played ? "Card down" : "Choosing..."}
                   </p>
                 )}
-                <div className="space-y-2 text-xs text-zinc-400">
-                  <p className="font-mono text-amber-200">{st?.score ?? 0} pts</p>
+                <div className="space-y-2 text-xs text-lbs-text-2">
+                  <p className="font-mono text-lbs-accent-2">{st?.score ?? 0} pts</p>
                   {canCall && (
                     <Button
                       size="sm"
@@ -216,13 +216,13 @@ export function MatchTable({
       </section>
 
       {match.phase === "play" && !out && (
-        <section className="space-y-3 rounded-xl border border-zinc-800 bg-zinc-900/60 p-5">
+        <section className="space-y-3 rounded-xl border border-lbs-line-solid bg-lbs-panel p-5">
           {myPlay ? (
-            <p className="text-zinc-300">Card down. Waiting for the others...</p>
+            <p className="text-lbs-text-dim">Card down. Waiting for the others...</p>
           ) : (
             <>
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <h2 className="text-lg font-medium text-zinc-100">Your hand</h2>
+                <h2 className="text-lg font-medium text-lbs-text">Your hand</h2>
                 <Button disabled={selected === null} onClick={() => selected !== null && run(playCard({ handId: selected }))}>
                   Play card
                 </Button>
@@ -248,8 +248,8 @@ export function MatchTable({
       )}
 
       {match.phase === "call" && !out && (
-        <section className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-zinc-800 bg-zinc-900/60 p-5">
-          <p className="text-sm text-zinc-400">
+        <section className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-lbs-line-solid bg-lbs-panel p-5">
+          <p className="text-sm text-lbs-text-2">
             Tap every card you think is wrong. A wrong card nobody calls costs everyone who missed it a life.
             A false call costs you one.
           </p>
@@ -260,10 +260,10 @@ export function MatchTable({
       )}
 
       {over && (
-        <section className="space-y-3 rounded-xl border border-amber-300/30 bg-amber-300/5 p-5">
-          <h2 className="text-lg font-medium text-zinc-100">Final standings</h2>
+        <section className="space-y-3 rounded-xl border border-lbs-accent/30 bg-lbs-accent/5 p-5">
+          <h2 className="text-lg font-medium text-lbs-text">Final standings</h2>
           <table className="w-full text-left text-sm">
-            <thead className="text-xs text-zinc-500">
+            <thead className="text-xs text-lbs-text-3">
               <tr>
                 <th className="py-1 pr-3">#</th>
                 <th className="py-1 pr-3">Player</th>
@@ -271,20 +271,20 @@ export function MatchTable({
                 <th className="py-1 text-right">Rating</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-800">
+            <tbody className="divide-y divide-lbs-line-solid">
               {roomSeats
                 .map((s) => ({ s, st: stateOf(s.id) }))
                 .sort((a, b) => (a.st?.place ?? 99) - (b.st?.place ?? 99))
                 .map(({ s, st }) => {
                   const delta = (st?.ratingAfter ?? 0) - (st?.ratingBefore ?? 0);
                   return (
-                    <tr key={s.id.toString()} className={s.id === mySeat.id ? "bg-amber-300/10" : undefined}>
-                      <td className="py-2 pr-3 font-mono text-zinc-400">{st?.place ?? "-"}</td>
-                      <td className="py-2 pr-3 text-zinc-100">{nameOf(s.identity)}</td>
-                      <td className="py-2 pr-3 text-right font-mono text-amber-200">{st?.score ?? 0}</td>
-                      <td className="py-2 text-right font-mono text-zinc-300">
+                    <tr key={s.id.toString()} className={s.id === mySeat.id ? "bg-lbs-accent/10" : undefined}>
+                      <td className="py-2 pr-3 font-mono text-lbs-text-2">{st?.place ?? "-"}</td>
+                      <td className="py-2 pr-3 text-lbs-text">{nameOf(s.identity)}</td>
+                      <td className="py-2 pr-3 text-right font-mono text-lbs-accent-2">{st?.score ?? 0}</td>
+                      <td className="py-2 text-right font-mono text-lbs-text-dim">
                         {st?.ratingAfter ?? 0}{" "}
-                        <span className={delta >= 0 ? "text-emerald-300" : "text-red-300"}>
+                        <span className={delta >= 0 ? "text-success" : "text-lbs-bad"}>
                           ({delta >= 0 ? "+" : ""}{delta})
                         </span>
                       </td>
@@ -300,9 +300,9 @@ export function MatchTable({
         </section>
       )}
 
-      <section className="space-y-2 rounded-xl border border-zinc-800 bg-zinc-900/40 p-4">
+      <section className="space-y-2 rounded-xl border border-lbs-line-solid bg-lbs-panel-soft p-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-medium text-zinc-300">Table log</h2>
+          <h2 className="text-sm font-medium text-lbs-text-dim">Table log</h2>
           {!over && !out && (
             <Button
               size="sm"
@@ -320,14 +320,14 @@ export function MatchTable({
         <ul className="space-y-1 text-sm">
           {roomEvents.map((e) => (
             <li key={e.id.toString()} className={TONE[e.tone] ?? TONE.neutral}>
-              <span className="mr-2 font-mono text-xs text-zinc-600">r{e.round}</span>
+              <span className="mr-2 font-mono text-xs text-lbs-text-4">r{e.round}</span>
               {e.text}
             </li>
           ))}
         </ul>
       </section>
 
-      {error && <p className="text-sm text-red-300">{error}</p>}
+      {error && <p className="text-sm text-lbs-bad">{error}</p>}
     </div>
   );
 }

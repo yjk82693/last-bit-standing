@@ -63,9 +63,9 @@ export function GuestSettings({ onExit }: { onExit: () => void }) {
     <div className="space-y-5">
       <ProfileCard guest />
 
-      <div className="space-y-2 rounded-lg border border-amber-300/30 bg-amber-300/5 p-4">
-        <h3 className="font-medium text-zinc-100">Keep your record</h3>
-        <p className="text-sm text-zinc-400">
+      <div className="space-y-2 rounded-lg border border-lbs-accent/30 bg-lbs-accent/5 p-4">
+        <h3 className="font-medium text-lbs-text">Keep your record</h3>
+        <p className="text-sm text-lbs-text-2">
           Your guest record lives only in this browser. Register, or sign in to an
           existing account, and your rating and stats move onto that account.
           Ranked play on the leaderboard needs an account.
@@ -76,14 +76,14 @@ export function GuestSettings({ onExit }: { onExit: () => void }) {
       </div>
 
       <div className="space-y-2">
-        <h3 className="text-sm font-medium text-zinc-300">Leave guest mode</h3>
-        <p className="text-sm text-zinc-500">Deletes this guest ID and everything recorded under it.</p>
+        <h3 className="text-sm font-medium text-lbs-text-dim">Leave guest mode</h3>
+        <p className="text-sm text-lbs-text-3">Deletes this guest ID and everything recorded under it.</p>
         <Button variant="outline" onClick={() => void leave()} disabled={busy}>
           <LogOut className="size-4" /> Leave and delete guest data
         </Button>
       </div>
 
-      {error && <p className="text-sm text-red-300">{error}</p>}
+      {error && <p className="text-sm text-lbs-bad">{error}</p>}
     </div>
   );
 }
@@ -111,5 +111,5 @@ export function GuestLinkClaimer() {
   }, [conn.isActive, claim]);
 
   if (!note) return null;
-  return <p className={note.ok ? "text-sm text-emerald-300" : "text-sm text-red-300"}>{note.text}</p>;
+  return <p className={note.ok ? "text-sm text-success" : "text-sm text-lbs-bad"}>{note.text}</p>;
 }

@@ -34,14 +34,14 @@ function SignedInGate() {
   const auth = useAuth();
   const [guest, setGuest] = useGuestMode();
   if (auth.isLoading) {
-    return <Panel><p className="text-zinc-400">Checking sign-in...</p></Panel>;
+    return <Panel><p className="text-lbs-text-2">Checking sign-in...</p></Panel>;
   }
   const idToken = auth.isAuthenticated ? auth.user?.id_token : undefined;
   if (!idToken && !guest) {
     return (
       <Panel>
-        <h2 className="text-lg font-medium text-zinc-100">Sign in or play as guest</h2>
-        <p className="text-sm text-zinc-400">
+        <h2 className="text-lg font-medium text-lbs-text">Sign in or play as guest</h2>
+        <p className="text-sm text-lbs-text-2">
           An account keeps your rating on every device. A guest gets a random ID in this browser.
         </p>
         <div className="flex flex-wrap gap-2">
@@ -84,15 +84,15 @@ function Shell() {
   if (conn.connectionError) {
     return (
       <Panel>
-        <p className="text-red-300">Could not reach SpacetimeDB at {SPACETIME_URI}.</p>
-        <p className="text-sm text-zinc-400">
+        <p className="text-lbs-bad">Could not reach SpacetimeDB at {SPACETIME_URI}.</p>
+        <p className="text-sm text-lbs-text-2">
           Is <code className="font-mono">spacetime start</code> running?
         </p>
       </Panel>
     );
   }
   if (!conn.isActive || !conn.identity || !roomsReady) {
-    return <Panel><p className="text-zinc-400">Connecting to the table...</p></Panel>;
+    return <Panel><p className="text-lbs-text-2">Connecting to the table...</p></Panel>;
   }
 
   const me = conn.identity;
@@ -107,8 +107,8 @@ function Shell() {
     <>
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div className="space-y-1">
-          <p className="font-mono text-xs tracking-[0.28em] text-amber-200/80">MULTIPLAYER</p>
-          <h1 className="text-3xl font-semibold tracking-tight text-zinc-50 sm:text-4xl">
+          <p className="font-mono text-xs tracking-[0.28em] text-lbs-accent-2/80">MULTIPLAYER</p>
+          <h1 className="text-3xl font-semibold tracking-tight text-lbs-text-hi sm:text-4xl">
             Last Bit Standing
           </h1>
         </div>
@@ -128,7 +128,7 @@ function Shell() {
 
 function Panel({ children }: { children: React.ReactNode }) {
   return (
-    <section className="space-y-3 rounded-xl border border-zinc-800 bg-zinc-900/60 p-5">
+    <section className="space-y-3 rounded-xl border border-lbs-line-solid bg-lbs-panel p-5">
       {children}
     </section>
   );
@@ -154,8 +154,8 @@ function Lobby({ rooms, seats }: { rooms: readonly Room[]; seats: readonly Seat[
   return (
     <div className="grid gap-6 md:grid-cols-2">
       <Panel>
-        <h2 className="text-lg font-medium text-zinc-100">Quick match</h2>
-        <p className="text-sm text-zinc-400">Jump into the next open table of that size.</p>
+        <h2 className="text-lg font-medium text-lbs-text">Quick match</h2>
+        <p className="text-sm text-lbs-text-2">Jump into the next open table of that size.</p>
         <div className="flex gap-2">
           {QUICK_SIZES.map((n) => (
             <Button key={n} variant="secondary" onClick={() => run(quickMatch({ size: n }))}>
@@ -166,7 +166,7 @@ function Lobby({ rooms, seats }: { rooms: readonly Room[]; seats: readonly Seat[
       </Panel>
 
       <Panel>
-        <h2 className="text-lg font-medium text-zinc-100">Join by code</h2>
+        <h2 className="text-lg font-medium text-lbs-text">Join by code</h2>
         <div className="flex gap-2">
           <Input
             value={code}
@@ -182,7 +182,7 @@ function Lobby({ rooms, seats }: { rooms: readonly Room[]; seats: readonly Seat[
       </Panel>
 
       <Panel>
-        <h2 className="text-lg font-medium text-zinc-100">Custom room</h2>
+        <h2 className="text-lg font-medium text-lbs-text">Custom room</h2>
         <Input
           value={customName}
           maxLength={32}
@@ -190,7 +190,7 @@ function Lobby({ rooms, seats }: { rooms: readonly Room[]; seats: readonly Seat[
           onChange={(e) => setCustomName(e.target.value)}
         />
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-sm text-zinc-400">Seats</span>
+          <span className="text-sm text-lbs-text-2">Seats</span>
           {[2, 3, 4, 5, 6].map((n) => (
             <Button
               key={n}
@@ -202,7 +202,7 @@ function Lobby({ rooms, seats }: { rooms: readonly Room[]; seats: readonly Seat[
             </Button>
           ))}
         </div>
-        <label className="flex items-center gap-2 text-sm text-zinc-300">
+        <label className="flex items-center gap-2 text-sm text-lbs-text-dim">
           <input
             type="checkbox"
             checked={customPrivate}
@@ -220,19 +220,19 @@ function Lobby({ rooms, seats }: { rooms: readonly Room[]; seats: readonly Seat[
       </Panel>
 
       <Panel>
-        <h2 className="text-lg font-medium text-zinc-100">Open tables</h2>
+        <h2 className="text-lg font-medium text-lbs-text">Open tables</h2>
         {openRooms.length === 0 ? (
-          <p className="text-sm text-zinc-400">No public tables right now. Start one.</p>
+          <p className="text-sm text-lbs-text-2">No public tables right now. Start one.</p>
         ) : (
-          <ul className="divide-y divide-zinc-800">
+          <ul className="divide-y divide-lbs-line-solid">
             {openRooms.map((r) => {
               const n = countIn(r.id);
               const full = n >= r.capacity;
               return (
                 <li key={r.id.toString()} className="flex items-center justify-between gap-3 py-2">
                   <div className="min-w-0">
-                    <p className="truncate text-zinc-100">{r.name}</p>
-                    <p className="text-xs text-zinc-500">
+                    <p className="truncate text-lbs-text">{r.name}</p>
+                    <p className="text-xs text-lbs-text-3">
                       {r.kind === "quick" ? "Quick" : "Custom"} · {n}/{r.capacity}
                     </p>
                   </div>
@@ -246,7 +246,7 @@ function Lobby({ rooms, seats }: { rooms: readonly Room[]; seats: readonly Seat[
         )}
       </Panel>
 
-      {error && <p className="text-sm text-red-300 md:col-span-2">{error}</p>}
+      {error && <p className="text-sm text-lbs-bad md:col-span-2">{error}</p>}
     </div>
   );
 }
@@ -286,8 +286,8 @@ function WaitingRoom({
   if (room.phase === "playing") {
     return (
       <Panel>
-        <h2 className="text-lg font-medium text-zinc-100">{room.name}</h2>
-        <p className="text-zinc-300">Match started. The table itself comes in the next step.</p>
+        <h2 className="text-lg font-medium text-lbs-text">{room.name}</h2>
+        <p className="text-lbs-text-dim">Match started. The table itself comes in the next step.</p>
       </Panel>
     );
   }
@@ -296,24 +296,24 @@ function WaitingRoom({
     <Panel>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="text-lg font-medium text-zinc-100">{room.name}</h2>
-          <p className="text-xs text-zinc-500">
+          <h2 className="text-lg font-medium text-lbs-text">{room.name}</h2>
+          <p className="text-xs text-lbs-text-3">
             {isCustom ? "Custom" : "Quick"} · {room.visibility} · {roomSeats.length}/{room.capacity}
           </p>
         </div>
         <div className="text-right">
-          <p className="text-xs text-zinc-500">Room code</p>
-          <p className="font-mono text-2xl tracking-[0.3em] text-amber-200">{room.code}</p>
+          <p className="text-xs text-lbs-text-3">Room code</p>
+          <p className="font-mono text-2xl tracking-[0.3em] text-lbs-accent-2">{room.code}</p>
         </div>
       </div>
 
-      <ul className="divide-y divide-zinc-800">
+      <ul className="divide-y divide-lbs-line-solid">
         {roomSeats.map((s) => (
           <li key={s.id.toString()} className="flex items-center justify-between gap-3 py-2">
             <div className="flex items-center gap-2">
-              <Users className="size-4 text-zinc-500" />
-              <span className="text-zinc-100">{nameOf(s.identity)}</span>
-              {sameId(s.identity, room.host) && <Crown className="size-4 text-amber-300" />}
+              <Users className="size-4 text-lbs-text-3" />
+              <span className="text-lbs-text">{nameOf(s.identity)}</span>
+              {sameId(s.identity, room.host) && <Crown className="size-4 text-lbs-accent" />}
               {sameId(s.identity, me) && <Badge variant="secondary">you</Badge>}
               {!onlineOf(s.identity) && <Badge variant="outline">offline</Badge>}
             </div>
@@ -328,13 +328,13 @@ function WaitingRoom({
           </li>
         ))}
         {Array.from({ length: Math.max(0, room.capacity - roomSeats.length) }).map((_, i) => (
-          <li key={`empty-${i}`} className="py-2 text-sm text-zinc-600">Open seat</li>
+          <li key={`empty-${i}`} className="py-2 text-sm text-lbs-text-4">Open seat</li>
         ))}
       </ul>
 
       {isCustom && isHost && (
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-sm text-zinc-400">Seats</span>
+          <span className="text-sm text-lbs-text-2">Seats</span>
           {[2, 3, 4, 5, 6].map((n) => (
             <Button
               key={n}
@@ -364,7 +364,7 @@ function WaitingRoom({
         </Button>
       </div>
       {!canStart && (
-        <p className="text-xs text-zinc-500">
+        <p className="text-xs text-lbs-text-3">
           {isCustom
             ? isHost
               ? "Start unlocks when at least 2 players are seated and everyone is ready."
@@ -372,7 +372,7 @@ function WaitingRoom({
             : "Starts when the table is full and everyone is ready."}
         </p>
       )}
-      {error && <p className="text-sm text-red-300">{error}</p>}
+      {error && <p className="text-sm text-lbs-bad">{error}</p>}
     </Panel>
   );
 }
