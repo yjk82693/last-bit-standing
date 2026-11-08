@@ -4,7 +4,13 @@ import { BOTS } from "./bots";
 import { CARDS, PROMPTS } from "./catalog";
 import {
   answerCardFor,
+  beginRound,
+  callsLeft,
   chooseBotCard,
+  createMatch,
+  playBot,
+  playHuman,
+  toggleAccuse,
   isExactCard,
   matchQuality,
 } from "./engine";
@@ -57,4 +63,29 @@ assert.ok(!server.includes("chooseBotCard"));
 assert.ok(!server.includes("SOLO_RULES"));
 assert.ok(!server.includes("overheat"));
 
-console.log("rules.test ok · R3 overheat");
+// ---- R2: two calls per round ----
+assert.equal(SOLO_RULES.callsPerRound, 2);
+function accusingTable() {
+  let state = beginRound(createMatch("Calls", "local"), 1_000_000);
+  const you = state.players.find((player) => player.isHuman)!;
+  state = playHuman(state, you.hand[0]!.id);
+  for (const bot of BOTS) state = playBot(state, bot.id, 1_000_000);
+  assert.equal(state.phase, "accusing");
+  return state;
+}
+const table = accusingTable();
+assert.equal(callsLeft(table), 2);
+const one = toggleAccuse(table, "clippy");
+const two = toggleAccuse(one, "hexa");
+assert.deepEqual(two.accusedIds, ["clippy", "hexa"]);
+assert.equal(callsLeft(two), 0);
+const third = toggleAccuse(two, "bitwise");
+assert.equal(third, two, "a third call is refused");
+assert.deepEqual(third.accusedIds, ["clippy", "hexa"]);
+// Taking a call back frees it.
+const undo = toggleAccuse(two, "hexa");
+assert.deepEqual(undo.accusedIds, ["clippy"]);
+assert.equal(callsLeft(undo), 1);
+assert.deepEqual(toggleAccuse(undo, "bitwise").accusedIds, ["clippy", "bitwise"]);
+
+console.log("rules.test ok · R2 calls, R3 overheat");

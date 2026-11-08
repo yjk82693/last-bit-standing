@@ -8,7 +8,7 @@ import { HealthPips, PlayerSeat } from "@/components/player-seat";
 import { Button } from "@/components/ui/button";
 import { MainMenuButton } from "@/components/main-menu-button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { displayedHint, matchQuality, youPlayer } from "@/lib/engine";
+import { callsLeft, displayedHint, matchQuality, youPlayer } from "@/lib/engine";
 import { explainFromCard } from "@/lib/questions";
 import { basePoints, multiplierLabel, speedMultiplier } from "@/lib/scoring";
 import type { GameState } from "@/lib/types";
@@ -79,6 +79,10 @@ export function GameTable({
   const prompt = state.prompt;
   const canPlay = state.phase === "prompting" && !you.played && Boolean(state.selectedCardId);
   const canAccuse = state.phase === "accusing";
+  // R2: once both calls are used, only called bots stay tappable (to undo).
+  const calls = callsLeft(state);
+  const callable = (id: string) =>
+    canAccuse && !byId[id]?.eliminated && (calls > 0 || state.accusedIds.includes(id));
   const elapsed =
     you.played && state.answeredAt
       ? Math.max(0, state.answeredAt - state.promptStartedAt)
@@ -250,7 +254,7 @@ export function GameTable({
               accused={state.accusedIds.includes("hexa")}
               stamp={stampFor(state, "hexa")}
               missed={missedCall(state, "hexa")}
-              canAccuse={canAccuse && !byId.hexa?.eliminated}
+              canAccuse={callable("hexa")}
               difficulty={prompt?.difficulty}
               onAccuse={() => onAccuse("hexa")}
             />
@@ -260,7 +264,7 @@ export function GameTable({
               accused={state.accusedIds.includes("clippy")}
               stamp={stampFor(state, "clippy")}
               missed={missedCall(state, "clippy")}
-              canAccuse={canAccuse && !byId.clippy?.eliminated}
+              canAccuse={callable("clippy")}
               difficulty={prompt?.difficulty}
               onAccuse={() => onAccuse("clippy")}
             />
@@ -270,7 +274,7 @@ export function GameTable({
               accused={state.accusedIds.includes("bitwise")}
               stamp={stampFor(state, "bitwise")}
               missed={missedCall(state, "bitwise")}
-              canAccuse={canAccuse && !byId.bitwise?.eliminated}
+              canAccuse={callable("bitwise")}
               difficulty={prompt?.difficulty}
               onAccuse={() => onAccuse("bitwise")}
             />
@@ -327,7 +331,7 @@ export function GameTable({
               accused={state.accusedIds.includes("ascii8")}
               stamp={stampFor(state, "ascii8")}
               missed={missedCall(state, "ascii8")}
-              canAccuse={canAccuse && !byId.ascii8?.eliminated}
+              canAccuse={callable("ascii8")}
               difficulty={prompt?.difficulty}
               onAccuse={() => onAccuse("ascii8")}
             />
@@ -338,7 +342,7 @@ export function GameTable({
               accused={state.accusedIds.includes("nullptr")}
               stamp={stampFor(state, "nullptr")}
               missed={missedCall(state, "nullptr")}
-              canAccuse={canAccuse && !byId.nullptr?.eliminated}
+              canAccuse={callable("nullptr")}
               difficulty={prompt?.difficulty}
               onAccuse={() => onAccuse("nullptr")}
             />
@@ -366,7 +370,21 @@ export function GameTable({
             </ul>
           </div>
           {state.phase === "accusing" ? (
-            <Button onClick={onResolveNow}>Lock accusations</Button>
+            <div className="grid gap-2">
+              <p
+                className="font-mono text-sm text-lbs-accent-2"
+                aria-live="polite"
+              >
+                Calls {calls}/{SOLO_RULES.callsPerRound}
+              </p>
+              {calls === 0 ? (
+                <p className="text-pretty text-xs leading-4 text-lbs-text-2">
+                  No calls left. Tap a called bot to take that call back, or
+                  lock in.
+                </p>
+              ) : null}
+              <Button onClick={onResolveNow}>Lock accusations</Button>
+            </div>
           ) : null}
           {state.phase === "resolving" ? (
             <Button onClick={onNext}>Next round</Button>
@@ -415,7 +433,7 @@ export function GameTable({
           {you.hand.length === 0 ? (
             <p className="text-sm text-lbs-text-3">
               {you.played
-                ? "Card is on the table. Call a wrong bot to take a life."
+                ? `Card is on the table. Call up to ${SOLO_RULES.callsPerRound} wrong bots to take a life each.`
                 : "No cards left in hand."}
             </p>
           ) : (

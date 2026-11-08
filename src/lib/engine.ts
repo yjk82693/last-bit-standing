@@ -18,7 +18,7 @@ import type {
   PlayerState,
   PromptDef,
 } from "@/lib/types";
-import { overheatedAccuracy } from "@/lib/rules";
+import { overheatedAccuracy, SOLO_RULES } from "@/lib/rules";
 
 function shuffle<T>(items: T[]): T[] {
   const next = [...items];
@@ -538,7 +538,7 @@ function enterAccuseIfReady(state: GameState, now = Date.now()): GameState {
       ...state.logs,
       line(
         "warn",
-        "Call a wrong bot to take a life. Two correct calls in a row restore 1 of yours (max 3). A correct bot — or your own wrong card — costs you a life.",
+        `Call up to ${SOLO_RULES.callsPerRound} wrong bots to take a life each. Two correct calls in a row restore 1 of yours (max 3). A correct bot — or your own wrong card — costs you a life.`,
       ),
     ],
   };
@@ -634,13 +634,22 @@ export function timeoutHuman(state: GameState): GameState {
   };
 }
 
+/** R2: calls the player can still make this round. */
+export function callsLeft(state: GameState): number {
+  return Math.max(0, SOLO_RULES.callsPerRound - state.accusedIds.length);
+}
+
 export function toggleAccuse(state: GameState, botId: string): GameState {
   if (state.phase !== "accusing") return state;
   const target = state.players.find((player) => player.id === botId);
   if (!target || target.isHuman || target.eliminated || !target.played) {
     return state;
   }
-  const accusedIds = state.accusedIds.includes(botId)
+  const already = state.accusedIds.includes(botId);
+  // R2: a new call needs a call left. Taking a call back before the lock is
+  // always allowed and frees it again.
+  if (!already && callsLeft(state) <= 0) return state;
+  const accusedIds = already
     ? state.accusedIds.filter((id) => id !== botId)
     : [...state.accusedIds, botId];
   return { ...state, accusedIds };
