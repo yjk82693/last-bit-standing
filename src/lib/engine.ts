@@ -18,6 +18,7 @@ import type {
   PlayerState,
   PromptDef,
 } from "@/lib/types";
+import { overheatedAccuracy } from "@/lib/rules";
 
 function shuffle<T>(items: T[]): T[] {
   const next = [...items];
@@ -500,11 +501,15 @@ export function chooseBotCard(
   hand: CardDef[],
   prompt: PromptDef,
   timerRatio: number,
+  // R3: pass the round to apply overheat. Without it the bot plays at its
+  // base accuracy (the pre-R3 behaviour).
+  round?: number,
 ): CardDef {
   if (!hand.length) {
     return answerCardFor(prompt);
   }
-  let accuracy = bot.accuracy;
+  let accuracy =
+    round == null ? bot.accuracy : overheatedAccuracy(bot.accuracy, round);
   if (prompt.category === bot.specialty) accuracy += 0.12;
   if (timerRatio < 0.38) accuracy *= 1 - bot.panic * 0.75;
   const exact = hand.filter((card) => isExactCard(card, prompt));
@@ -588,7 +593,13 @@ export function playBot(
   if (player.hand.length === 0) return state;
   const remain = Math.max(0, state.deadlineAt - now);
   const total = roundTimerMs(state.round, state.prompt.difficulty);
-  const card = chooseBotCard(bot, player.hand, state.prompt, remain / total);
+  const card = chooseBotCard(
+    bot,
+    player.hand,
+    state.prompt,
+    remain / total,
+    state.round,
+  );
   if (!card) return state;
   const players = state.players.map((item) =>
     item.id === botId

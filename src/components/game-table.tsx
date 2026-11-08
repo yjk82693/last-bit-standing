@@ -14,6 +14,7 @@ import { basePoints, multiplierLabel, speedMultiplier } from "@/lib/scoring";
 import type { GameState } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { themeScope } from "@/lib/theme";
+import { overheatDrop, SOLO_RULES } from "@/lib/rules";
 
 // End-screen summary of this run, built in GameApp from per-round state.
 export type RunStats = {
@@ -107,6 +108,13 @@ export function GameTable({
             {state.phase === "accusing" ? " · call lives" : ""}
             {state.phase === "resolving" ? " · reveal" : ""}
           </p>
+          {overheatDrop(state.round) > 0 ? (
+            // R3: one small line once bots start to overheat.
+            <p className="font-mono text-[11px] text-warning">
+              Overheat −{SOLO_RULES.overheat.perRound.toFixed(2)}/round · bot accuracy −
+              {overheatDrop(state.round).toFixed(2)}
+            </p>
+          ) : null}
         </div>
         <div className="flex items-center gap-3 sm:gap-4">
           <Tooltip>
