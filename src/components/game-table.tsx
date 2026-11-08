@@ -13,6 +13,7 @@ import { explainFromCard } from "@/lib/questions";
 import { basePoints, multiplierLabel, speedMultiplier } from "@/lib/scoring";
 import type { GameState } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { themeScope } from "@/lib/theme";
 
 export function GameTable({
   state,
@@ -115,7 +116,7 @@ export function GameTable({
                 </span>
               </Button>
             </TooltipTrigger>
-            <TooltipContent>
+            <TooltipContent {...themeScope}>
               {hintsLeft <= 0 && hintLevel === 0
                 ? "No lamps left this table."
                 : hintLevel >= 3
@@ -163,7 +164,7 @@ export function GameTable({
                 </span>
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Binary, hex, octal, and ASCII help</TooltipContent>
+            <TooltipContent {...themeScope}>Binary, hex, octal, and ASCII help</TooltipContent>
           </Tooltip>
         </div>
       </header>

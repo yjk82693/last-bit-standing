@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { GameTable } from "@/components/game-table";
 import { TitleScreen } from "@/components/title-screen";
 import { aiDelayMs, BOTS } from "@/lib/bots";
@@ -28,6 +28,7 @@ import {
 } from "@/lib/store";
 import { useTableVoice } from "@/components/use-table-voice";
 import type { GameState, ScoreRow } from "@/lib/types";
+import { themeScope } from "@/lib/theme";
 
 export function GameApp({ playerName = "Operator" }: { playerName?: string }) {
   const snapshot = localCatalog();
@@ -226,74 +227,88 @@ export function GameApp({ playerName = "Operator" }: { playerName?: string }) {
 
   if (!state) {
     return (
-      <TitleScreen
-        playerName={playerName}
-        storeLabel={storeLabel}
-        scores={scores}
-        onResetScores={() => {
-          setScores(clearLocalScores());
-          void fetch("/api/scores", { method: "DELETE" });
-        }}
-        onStart={() => {
-          saved.current = false;
-          helpOpenRef.current = false;
-          hintOpenRef.current = false;
-          clockFreezeRef.current = null;
-          setClockFreeze(null);
-          setHelpOpen(false);
-          setState(createMatch(playerName, storeLabel));
-        }}
-      />
+      <ThemeRoot>
+        <TitleScreen
+          playerName={playerName}
+          storeLabel={storeLabel}
+          scores={scores}
+          onResetScores={() => {
+            setScores(clearLocalScores());
+            void fetch("/api/scores", { method: "DELETE" });
+          }}
+          onStart={() => {
+            saved.current = false;
+            helpOpenRef.current = false;
+            hintOpenRef.current = false;
+            clockFreezeRef.current = null;
+            setClockFreeze(null);
+            setHelpOpen(false);
+            setState(createMatch(playerName, storeLabel));
+          }}
+        />
+      </ThemeRoot>
     );
   }
 
   return (
-    <GameTable
-      state={state}
-      now={clockFreeze ?? now}
-      helpOpen={helpOpen}
-      onSelect={(cardId) => {
-        if (helpBlocksTable()) return;
-        setState((current) => {
-          if (!current) return current;
-          if (current.selectedCardId === cardId) return playHuman(current, cardId);
-          return selectCard(current, cardId);
-        });
-      }}
-      onPlay={() => {
-        if (helpBlocksTable()) return;
-        setState((current) =>
-          current && current.selectedCardId
-            ? playHuman(current, current.selectedCardId)
-            : current,
-        );
-      }}
-      onAccuse={(botId) => {
-        if (helpBlocksTable()) return;
-        setState((current) => (current ? toggleAccuse(current, botId) : current));
-      }}
-      onResolveNow={() => {
-        if (helpBlocksTable()) return;
-        setState((current) =>
-          current && current.phase === "accusing" ? resolveRound(current) : current,
-        );
-      }}
-      onNext={() => {
-        if (helpBlocksTable()) return;
-        setState((current) =>
-          current ? advanceAfterResolve(current) : current,
-        );
-      }}
-      onQuit={leaveTable}
-      onHint={() => {
-        if (helpBlocksTable()) return;
-        setState((current) => (current ? spendHint(current) : current));
-      }}
-      onCloseHint={() =>
-        setState((current) => (current ? closeHint(current) : current))
-      }
-      onOpenHelp={openHelp}
-      onCloseHelp={closeHelp}
-    />
+    <ThemeRoot>
+      <GameTable
+        state={state}
+        now={clockFreeze ?? now}
+        helpOpen={helpOpen}
+        onSelect={(cardId) => {
+          if (helpBlocksTable()) return;
+          setState((current) => {
+            if (!current) return current;
+            if (current.selectedCardId === cardId) return playHuman(current, cardId);
+            return selectCard(current, cardId);
+          });
+        }}
+        onPlay={() => {
+          if (helpBlocksTable()) return;
+          setState((current) =>
+            current && current.selectedCardId
+              ? playHuman(current, current.selectedCardId)
+              : current,
+          );
+        }}
+        onAccuse={(botId) => {
+          if (helpBlocksTable()) return;
+          setState((current) => (current ? toggleAccuse(current, botId) : current));
+        }}
+        onResolveNow={() => {
+          if (helpBlocksTable()) return;
+          setState((current) =>
+            current && current.phase === "accusing" ? resolveRound(current) : current,
+          );
+        }}
+        onNext={() => {
+          if (helpBlocksTable()) return;
+          setState((current) =>
+            current ? advanceAfterResolve(current) : current,
+          );
+        }}
+        onQuit={leaveTable}
+        onHint={() => {
+          if (helpBlocksTable()) return;
+          setState((current) => (current ? spendHint(current) : current));
+        }}
+        onCloseHint={() =>
+          setState((current) => (current ? closeHint(current) : current))
+        }
+        onOpenHelp={openHelp}
+        onCloseHelp={closeHelp}
+      />
+    </ThemeRoot>
+  );
+}
+
+// Root of the single-player theme. Re-declares page colour and text so they
+// resolve against the theme variables instead of inheriting from <body>.
+function ThemeRoot({ children }: { children: ReactNode }) {
+  return (
+    <div {...themeScope} className="min-h-screen bg-lbs-body text-lbs-text">
+      {children}
+    </div>
   );
 }

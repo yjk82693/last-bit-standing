@@ -10,6 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { themeScope } from "@/lib/theme";
 
 const ASCII_ROWS = [
   {
@@ -71,6 +72,7 @@ export function EncodingHelp({
       }}
     >
       <DialogContent
+        {...themeScope}
         showCloseButton={false}
         overlayClassName="bg-lbs-scrim supports-backdrop-filter:backdrop-blur-sm"
         onPointerDownOutside={(event) => event.preventDefault()}

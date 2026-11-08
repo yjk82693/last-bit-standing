@@ -16,6 +16,7 @@ import { EncodingCard } from "@/components/encoding-card";
 import { CARDS } from "@/lib/catalog";
 import { BOTS } from "@/lib/bots";
 import type { ScoreRow } from "@/lib/types";
+import { themeScope } from "@/lib/theme";
 
 export function TitleScreen({
   playerName,
@@ -195,7 +196,7 @@ function HowToPlay() {
           How to play
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-lg">
+      <DialogContent {...themeScope} className="max-w-lg">
         <DialogHeader>
           <DialogTitle>Rules of the table</DialogTitle>
           <DialogDescription>

@@ -47,11 +47,11 @@ export function EncodingCard({
           ? "h-[132px] w-[90px] p-2 sm:h-[148px] sm:w-[102px] lg:h-[160px] lg:w-[110px]"
           : "h-[236px] w-[164px] p-3",
         (card.encoding ?? "binary") === "binary" &&
-          "border-lbs-enc-binary/30 bg-linear-to-b from-lbs-card-binary to-lbs-card-base",
+          "border-lbs-card-edge-binary bg-linear-to-b from-lbs-card-binary to-lbs-card-base",
         card.encoding === "hex" &&
-          "border-lbs-enc-hex/30 bg-linear-to-b from-lbs-card-hex to-lbs-card-base",
+          "border-lbs-card-edge-hex bg-linear-to-b from-lbs-card-hex to-lbs-card-base",
         card.encoding === "ascii" &&
-          "border-lbs-enc-ascii/30 bg-linear-to-b from-lbs-card-ascii to-lbs-card-base",
+          "border-lbs-card-edge-ascii bg-linear-to-b from-lbs-card-ascii to-lbs-card-base",
         selected &&
           !compact &&
           "z-10 border-lbs-card-selected ring-2 ring-inset ring-lbs-card-selected",
@@ -61,7 +61,14 @@ export function EncodingCard({
         disabled && !selected && "opacity-60",
       )}
     >
-      <div className="flex items-center justify-between gap-2 font-mono text-[10px] tracking-[0.18em] text-lbs-card-label/80">
+      <div
+        className={cn(
+          "flex items-center justify-between gap-2 font-mono text-[10px] tracking-[0.18em]",
+          (card.encoding ?? "binary") === "binary" && "text-lbs-card-label-binary",
+          card.encoding === "hex" && "text-lbs-card-label-hex",
+          card.encoding === "ascii" && "text-lbs-card-label-ascii",
+        )}
+      >
         <span>{encodingLabel[card.encoding] ?? "CARD"}</span>
         <span className="text-lbs-card-ink-2/70">{rarityPips[card.rarity]}</span>
       </div>
