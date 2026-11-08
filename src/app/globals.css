@@ -121,6 +121,7 @@
   --color-lbs-wrong-ink: var(--lbs-wrong-ink);
   --color-lbs-called: var(--lbs-called);
   --color-lbs-called-ink: var(--lbs-called-ink);
+  --color-lbs-stamp: var(--lbs-stamp);
   --color-lbs-life: var(--lbs-life);
   --color-lbs-life-break: var(--lbs-life-break);
   --color-lbs-life-empty: var(--lbs-life-empty);
@@ -266,6 +267,7 @@
   --lbs-called: oklch(63.7% 0.237 25.331);
   --lbs-called-ink: oklch(80.8% 0.114 19.571);
   --lbs-correct-glow: rgb(52 211 153);
+  --lbs-stamp: oklch(12.9% 0.042 264.695);
   /* Lives */
   --lbs-life: oklch(71.2% 0.194 13.428);
   --lbs-life-break: oklch(81% 0.117 11.638);
@@ -448,6 +450,8 @@
   --lbs-called: #ff8fd0;
   --lbs-called-ink: #ff8fd0;
   --lbs-correct-glow: #46f0a0;
+  /* Solid plate behind a stamp so its text keeps 4.5:1 on any card */
+  --lbs-stamp: #121c32;
 
   /* Lives: life_full, life_empty */
   --lbs-life: #e8f0ff;
