@@ -106,6 +106,7 @@ export function PlayerSeat({
   bot,
   stamp,
   accused,
+  missed = false,
   onAccuse,
   canAccuse,
   difficulty,
@@ -114,6 +115,8 @@ export function PlayerSeat({
   bot?: BotDef;
   stamp?: MatchQuality | "accused" | null;
   accused?: boolean;
+  // Reveal only: this bot played a wrong card and the player did not call it.
+  missed?: boolean;
   onAccuse?: () => void;
   canAccuse?: boolean;
   difficulty?: Difficulty | null;
@@ -200,8 +203,18 @@ export function PlayerSeat({
           {specialtyLabel[bot.specialty]}
         </p>
       ) : null}
+      {missed ? (
+        <p className="font-mono text-[10px] font-semibold tracking-[0.14em] text-warning">
+          MISSED<span className="sr-only">: wrong card, not called</span>
+        </p>
+      ) : null}
       {shown ? (
-        <div className="relative">
+        <div
+          className={cn(
+            "relative",
+            missed && "rounded-xl outline-2 outline-offset-2 outline-warning outline-dashed",
+          )}
+        >
           <div className={cn(player.eliminated && "brightness-[0.42] saturate-50")}>
             <EncodingCard
               card={shown}

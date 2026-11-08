@@ -225,6 +225,7 @@ export function GameTable({
               bot={BOTS.find((bot) => bot.id === "hexa")}
               accused={state.accusedIds.includes("hexa")}
               stamp={stampFor(state, "hexa")}
+              missed={missedCall(state, "hexa")}
               canAccuse={canAccuse && !byId.hexa?.eliminated}
               difficulty={prompt?.difficulty}
               onAccuse={() => onAccuse("hexa")}
@@ -234,6 +235,7 @@ export function GameTable({
               bot={BOTS.find((bot) => bot.id === "clippy")}
               accused={state.accusedIds.includes("clippy")}
               stamp={stampFor(state, "clippy")}
+              missed={missedCall(state, "clippy")}
               canAccuse={canAccuse && !byId.clippy?.eliminated}
               difficulty={prompt?.difficulty}
               onAccuse={() => onAccuse("clippy")}
@@ -243,6 +245,7 @@ export function GameTable({
               bot={BOTS.find((bot) => bot.id === "bitwise")}
               accused={state.accusedIds.includes("bitwise")}
               stamp={stampFor(state, "bitwise")}
+              missed={missedCall(state, "bitwise")}
               canAccuse={canAccuse && !byId.bitwise?.eliminated}
               difficulty={prompt?.difficulty}
               onAccuse={() => onAccuse("bitwise")}
@@ -299,6 +302,7 @@ export function GameTable({
               bot={BOTS.find((bot) => bot.id === "ascii8")}
               accused={state.accusedIds.includes("ascii8")}
               stamp={stampFor(state, "ascii8")}
+              missed={missedCall(state, "ascii8")}
               canAccuse={canAccuse && !byId.ascii8?.eliminated}
               difficulty={prompt?.difficulty}
               onAccuse={() => onAccuse("ascii8")}
@@ -309,6 +313,7 @@ export function GameTable({
               bot={BOTS.find((bot) => bot.id === "nullptr")}
               accused={state.accusedIds.includes("nullptr")}
               stamp={stampFor(state, "nullptr")}
+              missed={missedCall(state, "nullptr")}
               canAccuse={canAccuse && !byId.nullptr?.eliminated}
               difficulty={prompt?.difficulty}
               onAccuse={() => onAccuse("nullptr")}
@@ -496,4 +501,12 @@ function stampFor(state: GameState, id: string) {
   if (!player.played || !state.prompt) return null;
   if (!state.prompt.matchGlyphs && !state.prompt.matchValues) return null;
   return matchQuality(player.played, state.prompt);
+}
+
+// A bot that played a wrong card (close or miss) which the player did not
+// call: the same seats resolveRound logs as "You did not call them".
+function missedCall(state: GameState, id: string) {
+  if (state.accusedIds.includes(id)) return false;
+  const stamp = stampFor(state, id);
+  return stamp === "close" || stamp === "miss";
 }
