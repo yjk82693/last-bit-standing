@@ -7,6 +7,12 @@ import { MAX_HEALTH } from "@/lib/bots";
 import { EncodingCard } from "@/components/encoding-card";
 import type { BotDef, Difficulty, MatchQuality, PlayerState } from "@/lib/types";
 
+const specialtyLabel = {
+  binary: "BINARY",
+  hex: "HEX",
+  ascii: "ASCII",
+} as const;
+
 export function HealthPips({
   health,
   className,
@@ -127,6 +133,9 @@ export function PlayerSeat({
   }, [player]);
 
   if (!player) return null;
+  // stamp is only set in the reveal, for seats still in play; "close" counts
+  // as wrong (only an exact match is right), same as resolveRound.
+  const botWrong = Boolean(bot) && (stamp === "close" || stamp === "miss");
   const shown = player.eliminated
     ? player.lastPlayed ?? player.played
     : player.played;
@@ -176,6 +185,21 @@ export function PlayerSeat({
         </div>
         <HealthPips health={player.health} variant="bits" />
       </div>
+      {bot ? (
+        <p
+          className={cn(
+            "max-w-full truncate font-mono text-[10px] font-semibold tracking-[0.14em]",
+            player.eliminated && "text-lbs-text-3",
+            !player.eliminated && bot.specialty === "binary" && "text-lbs-enc-binary",
+            !player.eliminated && bot.specialty === "hex" && "text-lbs-enc-hex",
+            !player.eliminated && bot.specialty === "ascii" && "text-lbs-enc-ascii",
+          )}
+        >
+          <span aria-hidden>MAJOR · </span>
+          <span className="sr-only">Specialty </span>
+          {specialtyLabel[bot.specialty]}
+        </p>
+      ) : null}
       {shown ? (
         <div className="relative">
           <div className={cn(player.eliminated && "brightness-[0.42] saturate-50")}>
@@ -204,6 +228,12 @@ export function PlayerSeat({
           WAITING
         </div>
       )}
+      {botWrong && bot ? (
+        <p className="w-full text-pretty text-center text-[11px] italic leading-[14px] text-lbs-text-2">
+          <span className="sr-only">{bot.name} says: </span>
+          &ldquo;{bot.blurb}&rdquo;
+        </p>
+      ) : null}
     </div>
   );
 }
