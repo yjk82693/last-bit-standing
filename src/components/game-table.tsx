@@ -15,6 +15,9 @@ import type { GameState } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { themeScope } from "@/lib/theme";
 
+// Warn this long before the clock ends that a card will be played for you.
+const AUTO_PLAY_NOTICE_MS = 10_000;
+
 export function GameTable({
   state,
   now,
@@ -262,6 +265,19 @@ export function GameTable({
                 {state.hintOpen ? "PAUSED · " : ""}
                 {Math.ceil(remain / 1000)}s
                 {state.phase === "prompting" ? ` · ${liveMultiplier}` : ""}
+              </p>
+            ) : null}
+            {state.phase === "prompting" && !you.played && remain <= AUTO_PLAY_NOTICE_MS ? (
+              // Same rule as timeoutHuman in engine.ts: at 0s the selected card
+              // plays, or the first card in hand if none is selected, and it is
+              // judged like any other play.
+              <p
+                role="status"
+                className="mx-auto mt-2 max-w-md rounded-md border border-warning/50 px-3 py-1.5 text-pretty text-sm leading-5 text-warning"
+              >
+                {state.selectedCardId
+                  ? "Under 10s. When time runs out, your selected card plays. If it is wrong, you lose a life."
+                  : "Under 10s. No card selected: when time runs out, the first card in your hand plays. If it is wrong, you lose a life."}
               </p>
             ) : null}
             {you.played ? (
