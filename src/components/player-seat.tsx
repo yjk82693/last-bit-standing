@@ -107,6 +107,7 @@ export function PlayerSeat({
   stamp,
   accused,
   missed = false,
+  faceDown = false,
   onAccuse,
   canAccuse,
   difficulty,
@@ -117,6 +118,8 @@ export function PlayerSeat({
   accused?: boolean;
   // Reveal only: this bot played a wrong card and the player did not call it.
   missed?: boolean;
+  // R1: the bot has played but its card stays face down for now.
+  faceDown?: boolean;
   onAccuse?: () => void;
   canAccuse?: boolean;
   difficulty?: Difficulty | null;
@@ -211,7 +214,15 @@ export function PlayerSeat({
           MISSED<span className="sr-only">: wrong card, not called</span>
         </p>
       ) : null}
-      {shown ? (
+      {shown && faceDown && !player.eliminated ? (
+        <div
+          role="img"
+          aria-label={`${player.name} has played a card, face down`}
+          className="flex h-[132px] w-[90px] items-center justify-center rounded-xl border border-lbs-card-back-line bg-lbs-card-back bg-[repeating-linear-gradient(45deg,transparent_0_6px,var(--lbs-card-back-line)_6px_7px)] font-mono text-[10px] tracking-[0.2em] text-lbs-text-2 shadow-[0_10px_24px_-12px_var(--lbs-card-shadow)] sm:h-[148px] sm:w-[102px] lg:h-[160px] lg:w-[110px]"
+        >
+          <span className="rounded bg-lbs-card-back px-1.5 py-0.5">FACE DOWN</span>
+        </div>
+      ) : shown ? (
         <div
           className={cn(
             "relative",

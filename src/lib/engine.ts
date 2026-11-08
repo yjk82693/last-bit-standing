@@ -614,8 +614,27 @@ export function playBot(
   return enterAccuseIfReady({
     ...state,
     players,
-    logs: [...state.logs, line("neutral", `${bot.name} plays ${card.glyph}.`)],
+    logs: [
+      ...state.logs,
+      line(
+        "neutral",
+        // R1: while the player has not played, the log must not name the card.
+        botCardsHidden(state)
+          ? `${bot.name} puts a card down, face down.`
+          : `${bot.name} plays ${card.glyph}.`,
+      ),
+    ],
   });
+}
+
+/**
+ * R1: bot cards on the felt stay face down until the player has played
+ * (by hand or by the timeout auto-play). The play itself is not hidden.
+ */
+export function botCardsHidden(state: GameState): boolean {
+  if (!SOLO_RULES.hideBotCardsUntilPlay) return false;
+  if (state.phase !== "dealing" && state.phase !== "prompting") return false;
+  return !youPlayer(state).played;
 }
 
 export function timeoutHuman(state: GameState): GameState {

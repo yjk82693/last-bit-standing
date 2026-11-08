@@ -5,11 +5,13 @@ import { CARDS, PROMPTS } from "./catalog";
 import {
   answerCardFor,
   beginRound,
+  botCardsHidden,
   callsLeft,
   chooseBotCard,
   createMatch,
   playBot,
   playHuman,
+  timeoutHuman,
   toggleAccuse,
   isExactCard,
   matchQuality,
@@ -63,6 +65,30 @@ assert.ok(!server.includes("chooseBotCard"));
 assert.ok(!server.includes("SOLO_RULES"));
 assert.ok(!server.includes("overheat"));
 
+// ---- R1: bot cards face down until the player plays ----
+assert.equal(SOLO_RULES.hideBotCardsUntilPlay, true);
+{
+  const start = beginRound(createMatch("Hidden", "local"), 1_000_000);
+  assert.equal(botCardsHidden(start), true);
+  const botPlayed = playBot(start, "hexa", 1_000_000);
+  const hexa = botPlayed.players.find((player) => player.id === "hexa")!;
+  assert.ok(hexa.played, "the bot did play");
+  assert.equal(botCardsHidden(botPlayed), true);
+  const lastLog = botPlayed.logs.at(-1)!.text;
+  assert.ok(lastLog.includes("face down"), lastLog);
+  assert.ok(!lastLog.includes(hexa.played!.glyph), "log must not name the card");
+  // The player plays: everything turns face up, later bot plays are named.
+  const you = botPlayed.players.find((player) => player.isHuman)!;
+  const afterYou = playHuman(botPlayed, you.hand[0]!.id);
+  assert.equal(botCardsHidden(afterYou), false);
+  const later = playBot(afterYou, "clippy", 1_000_000);
+  const clippy = later.players.find((player) => player.id === "clippy")!;
+  assert.ok(later.logs.at(-1)!.text.includes(clippy.played!.glyph));
+  // Timeout auto-play reveals the same way.
+  const timedOut = timeoutHuman(botPlayed);
+  assert.equal(botCardsHidden(timedOut), false);
+}
+
 // ---- R2: two calls per round ----
 assert.equal(SOLO_RULES.callsPerRound, 2);
 function accusingTable() {
@@ -88,4 +114,4 @@ assert.deepEqual(undo.accusedIds, ["clippy"]);
 assert.equal(callsLeft(undo), 1);
 assert.deepEqual(toggleAccuse(undo, "bitwise").accusedIds, ["clippy", "bitwise"]);
 
-console.log("rules.test ok · R2 calls, R3 overheat");
+console.log("rules.test ok · R1 hidden cards, R2 calls, R3 overheat");

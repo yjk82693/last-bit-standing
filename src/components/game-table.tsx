@@ -8,7 +8,13 @@ import { HealthPips, PlayerSeat } from "@/components/player-seat";
 import { Button } from "@/components/ui/button";
 import { MainMenuButton } from "@/components/main-menu-button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { callsLeft, displayedHint, matchQuality, youPlayer } from "@/lib/engine";
+import {
+  botCardsHidden,
+  callsLeft,
+  displayedHint,
+  matchQuality,
+  youPlayer,
+} from "@/lib/engine";
 import { explainFromCard } from "@/lib/questions";
 import { basePoints, multiplierLabel, speedMultiplier } from "@/lib/scoring";
 import type { GameState } from "@/lib/types";
@@ -79,6 +85,8 @@ export function GameTable({
   const prompt = state.prompt;
   const canPlay = state.phase === "prompting" && !you.played && Boolean(state.selectedCardId);
   const canAccuse = state.phase === "accusing";
+  // R1: bot cards stay face down until you play.
+  const faceDown = botCardsHidden(state);
   // R2: once both calls are used, only called bots stay tappable (to undo).
   const calls = callsLeft(state);
   const callable = (id: string) =>
@@ -254,6 +262,7 @@ export function GameTable({
               accused={state.accusedIds.includes("hexa")}
               stamp={stampFor(state, "hexa")}
               missed={missedCall(state, "hexa")}
+              faceDown={faceDown}
               canAccuse={callable("hexa")}
               difficulty={prompt?.difficulty}
               onAccuse={() => onAccuse("hexa")}
@@ -264,6 +273,7 @@ export function GameTable({
               accused={state.accusedIds.includes("clippy")}
               stamp={stampFor(state, "clippy")}
               missed={missedCall(state, "clippy")}
+              faceDown={faceDown}
               canAccuse={callable("clippy")}
               difficulty={prompt?.difficulty}
               onAccuse={() => onAccuse("clippy")}
@@ -274,6 +284,7 @@ export function GameTable({
               accused={state.accusedIds.includes("bitwise")}
               stamp={stampFor(state, "bitwise")}
               missed={missedCall(state, "bitwise")}
+              faceDown={faceDown}
               canAccuse={callable("bitwise")}
               difficulty={prompt?.difficulty}
               onAccuse={() => onAccuse("bitwise")}
@@ -331,6 +342,7 @@ export function GameTable({
               accused={state.accusedIds.includes("ascii8")}
               stamp={stampFor(state, "ascii8")}
               missed={missedCall(state, "ascii8")}
+              faceDown={faceDown}
               canAccuse={callable("ascii8")}
               difficulty={prompt?.difficulty}
               onAccuse={() => onAccuse("ascii8")}
@@ -342,6 +354,7 @@ export function GameTable({
               accused={state.accusedIds.includes("nullptr")}
               stamp={stampFor(state, "nullptr")}
               missed={missedCall(state, "nullptr")}
+              faceDown={faceDown}
               canAccuse={callable("nullptr")}
               difficulty={prompt?.difficulty}
               onAccuse={() => onAccuse("nullptr")}
